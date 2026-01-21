@@ -1180,11 +1180,11 @@
       text-align: center;
     }
   </style>
-  <link rel="stylesheet" href="onboarding.css">
-  <script src="tauri-api.js"></script>
+  <link rel="stylesheet" href="../css/onboarding.css">
+  <script src="../js/tauri-api.js"></script>
 </head>
 <body>
-  <img src="logo.png" alt="Quiz Logo" class="logo" onclick="goToHome()">
+  <img src="../assets/icons/logo.png" alt="Quiz Logo" class="logo" onclick="goToHome()">
 
   <!-- Start Screen -->
   <div class="start-screen" id="startScreen">
@@ -1229,10 +1229,10 @@
 
   <!-- Bottom Navigation Buttons -->
   <button class="customize-btn" id="customizeBtn" onclick="openCustomizeModal()">
-    <img src="edit.png" alt="Customize Quiz">
+    <img src="../assets/icons/edit.png" alt="Customize Quiz">
   </button>
   <button class="template-btn" id="templateBtn" onclick="openTemplatesModal()">
-    <img src="template.png" alt="Quiz Templates">
+    <img src="../assets/icons/template.png" alt="Quiz Templates">
   </button>
   
   <!-- Tags Bar (hidden initially) - REMOVED FROM QUIZ PAGE -->
@@ -1250,7 +1250,7 @@
     <div class="modal-content">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <h2 style="margin: 0;">Customize Your Quiz</h2>
-        <img src="plus.png" onclick="closeCustomizeModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+        <img src="../assets/icons/plus.png" onclick="closeCustomizeModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
       </div>
       
       <div class="question-type-row">
@@ -1346,7 +1346,7 @@
     <div class="modal-content">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <h2 style="margin: 0;">Quiz Templates</h2>
-        <img src="plus.png" onclick="closeTemplatesModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+        <img src="../assets/icons/plus.png" onclick="closeTemplatesModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
       </div>
       <div id="templatesList">
         <p style="text-align: center; color: #666;">No templates saved yet</p>
@@ -2311,6 +2311,6 @@
       startQuizWithConfig(pendingQuizConfig);
     }
   </script>
-  <script src="onboarding-interactive.js"></script>
+  <script src="../js/onboarding-interactive.js"></script>
 </body>
 </html>

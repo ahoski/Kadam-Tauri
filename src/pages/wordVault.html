@@ -653,11 +653,11 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="onboarding.css">
+  <link rel="stylesheet" href="../css/onboarding.css">
 </head>
 <body>
   <div class="header">
-    <img src="logo.png" class="logo" onclick="window.location.href='index.html'" alt="Home">
+    <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'" alt="Home">
     <div class="header-actions">
       <button class="add-btn" onclick="openAddPopup()">Add New Word</button>
     </div>
@@ -676,7 +676,7 @@
     <div class="filter-btn" id="hardFilter" data-filter="hard">
       <span class="difficulty-dot hard-dot"></span> Hard
     </div>
-    <img src="plus.png" class="add-tag-btn" onclick="openCreateTagModal()" title="Create new tag">
+    <img src="../assets/icons/plus.png" class="add-tag-btn" onclick="openCreateTagModal()" title="Create new tag">
   </div>
 
   <div class="main-content">
@@ -713,7 +713,7 @@
     <div class="popup">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <h3 style="margin: 0;">Add New Word</h3>
-        <img src="plus.png" onclick="closeAddPopup()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+        <img src="../assets/icons/plus.png" onclick="closeAddPopup()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
       </div>
       <input type="text" id="englishInput" placeholder="English word (required)" />
       <input type="text" id="teluguInput" placeholder="Translation (optional)" />      
@@ -733,7 +733,7 @@
     <div class="popup">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <h3 style="margin: 0;">Create New Tag</h3>
-        <img src="plus.png" onclick="closeCreateTagModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+        <img src="../assets/icons/plus.png" onclick="closeCreateTagModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
       </div>
       <input type="text" id="newTagInput" placeholder="Enter tag name..." />
       <label style="display: block; margin: 15px 0 10px 0;">Choose a color:</label>
@@ -1386,6 +1386,6 @@
       updateFilterDisplay();
     }
   </script>
-  <script src="onboarding-interactive.js"></script>
+  <script src="../js/onboarding-interactive.js"></script>
 </body>
 </html>

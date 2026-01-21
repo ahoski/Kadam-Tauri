@@ -235,13 +235,13 @@
       height: 50px;
     }
   </style>
-  <link rel="stylesheet" href="onboarding.css">
+  <link rel="stylesheet" href="../css/onboarding.css">
 </head>
 <body>
 
 <div class="container">
   <div id="screen" class="screen cover active">
-    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
     <h1 style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;" >The Little Red Hen</h1>
     <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;">A1 Level</h3>
     <button id="startbtn" onclick="startBook()">Open Book</button>
@@ -252,38 +252,38 @@
     <button onclick="closePopup()">✕</button>
   </div>
 
-  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="left.png" alt="Previous"></button>
-  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="right.png" alt="Next"></button>
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="../assets/icons/left.png" alt="Previous"></button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="../assets/icons/right.png" alt="Next"></button>
 </div>
 
 <script>
 const pages = [
   {
-    img: "page1.png",
+    img: "../assets/stories/page1.png",
     text: `There once was a <span class="word" data-word="little">little</span> red <span class="word" data-word="hen">hen</span> who lived with her <span class="word" data-word="friends">friends</span> on a <span class="word" data-word="farm">farm</span>. She was not a <span class="word" data-word="lazy">lazy</span> hen. She worked <span class="word" data-word="harder">harder</span> than all of the other <span class="word" data-word="animals">animals</span>.`
   },
   {
-    img: "page2.png",
+    img: "../assets/stories/page2.png",
     text: `The Little Red Hen wanted to <span class="word" data-word="plant">plant</span> some <span class="word" data-word="grains">grains</span> of <span class="word" data-word="wheat">wheat</span>. She asked for <span class="word" data-word="help">help</span>, but her <span class="word" data-word="friends">friends</span> <span class="word" data-word="refused">refused</span>.<br>So she planted the grains herself.`
   },
   {
-    img: "page3.png",
+    img: "../assets/stories/page3.png",
     text: `In the <span class="word" data-word="summer">summer</span>, the <span class="word" data-word="golden">golden</span> wheat was ready to be <span class="word" data-word="harvested">harvested</span>. Once again there was nobody to <span class="word" data-word="help">help</span> her. So the Little Red Hen did all the work.`
   },
   {
-  img: "page4.png",
+  img: "../assets/stories/page4.png",
   text: `The Little Red Hen had to <span class="word" data-word="grind">grind</span> the <span class="word" data-word="wheat">wheat</span> into <span class="word" data-word="flour">flour</span>. Her <span class="word" data-word="friends">friends</span> did not want to <span class="word" data-word="help">help</span>. So the Little Red Hen did all the work <span class="word" data-word="alone">alone</span>.`
   },
   {
-  img: "page5.png",
+  img: "../assets/stories/page5.png",
   text: `She made <span class="word" data-word="dough">dough</span> from the <span class="word" data-word="flour">flour</span>. Again, her friends did not <span class="word" data-word="help">help</span>. So the Little Red Hen did the work by <span class="word" data-word="herself">herself</span>.`
   },
   {
-  img: "page6.png",
+  img: "../assets/stories/page6.png",
   text: `Then she <span class="word" data-word="baked">baked</span> the <span class="word" data-word="bread">bread</span>. It smelled good and was very <span class="word" data-word="warm">warm</span>. Her friends came to see the bread.`
   },
   {
-  img: "page7.png",
+  img: "../assets/stories/page7.png",
   text: `The friends wanted to <span class="word" data-word="eat">eat</span> the bread. But the Little Red Hen did <span class="word" data-word="everything">everything</span> by herself. So she <span class="word" data-word="ate">ate</span> the bread <span class="word" data-word="alone">alone</span>.`
   }
 
@@ -445,7 +445,7 @@ function renderPage() {
   if (pageIndex >= pages.length) {
     container.className = "screen thankyou active";
     container.innerHTML = `
-      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
       <h1 style="color: #758B73; font-weight: normal; font-size: 3rem;">Thank you for reading!</h1>
       <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">${getThankYouTranslation()}</h3>
       <button onclick="addRedHenWords()" style="margin-top: 20px; background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px;">Add to Word Vault</button>
@@ -527,6 +527,6 @@ function addRedHenWords() {
 
 
 </script>
-<script src="onboarding-interactive.js"></script>
+<script src="../js/onboarding-interactive.js"></script>
 </body>
 </html>

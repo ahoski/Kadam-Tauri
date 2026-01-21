@@ -235,7 +235,7 @@
 <body>
 <div class="container">
   <div id="screen" class="screen cover active">
-    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
     <h1 style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;">The day I met Joe</h1>
     <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;">A1-A2 Level</h3>
     <button id="startbtn" onclick="startBook()">Open Book</button>
@@ -246,18 +246,18 @@
     <button onclick="closePopup()">✕</button>
   </div>
 
-  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="left.png" alt="Previous"></button>
-  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="right.png" alt="Next"></button>
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="../assets/icons/left.png" alt="Previous"></button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="../assets/icons/right.png" alt="Next"></button>
 </div>
 
 <script>
 const pages = [
-  { img: "joepage1.png", text: "Today I went to the store with my dad." },
-  { img: "joepage2.png", text: "Inside the store I saw a robot. It was hard not to look closely at him. Dad said, \"It’s not nice to stare.\"" },
-  { img: "joepage3.png", text: "The robot was shopping for food and we were too." },
-  { img: "joepage4.png", text: "Dad said, \"Why don’t you go say hi? I’m sure he’s nice.\"" },
-  { img: "joepage5.png", text: "Just then, the robot said, \"Hi! My name is Joe.\" I said, \"Hello, Joe. Are you a robot?\"" },
-  { img: "joepage6.png", text: "Joe smiled and said, \"No, it’s just that I can’t walk like you, so I ride in this wheelchair. I'm only part robot!" }
+  { img: "../assets/stories/joepage1.png", text: "Today I went to the store with my dad." },
+  { img: "../assets/stories/joepage2.png", text: "Inside the store I saw a robot. It was hard not to look closely at him. Dad said, \"It’s not nice to stare.\"" },
+  { img: "../assets/stories/joepage3.png", text: "The robot was shopping for food and we were too." },
+  { img: "../assets/stories/joepage4.png", text: "Dad said, \"Why don’t you go say hi? I’m sure he’s nice.\"" },
+  { img: "../assets/stories/joepage5.png", text: "Just then, the robot said, \"Hi! My name is Joe.\" I said, \"Hello, Joe. Are you a robot?\"" },
+  { img: "../assets/stories/joepage6.png", text: "Joe smiled and said, \"No, it’s just that I can’t walk like you, so I ride in this wheelchair. I'm only part robot!" }
 ];
 
 const dictionaries = {
@@ -375,7 +375,7 @@ function renderPage() {
   if (pageIndex >= pages.length) {
     container.className = "screen thankyou active";
     container.innerHTML = `
-      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
       <h2 style="color: #758B73; font-weight: normal;">Do you like robots?</h2>
 <div style="display: flex; gap: 10px;">
   <button onclick="submitPoll('yes')" style="

@@ -235,7 +235,7 @@
 <body>
 <div class="container">
   <div id="screen" class="screen cover active">
-    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
     <h1 style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;">The birth of Jesus</h1>
     <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;">A1-A2 Level</h3>
     <button id="startbtn" onclick="startBook()">Open Book</button>
@@ -246,21 +246,21 @@
     <button onclick="closePopup()">✕</button>
   </div>
 
-  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="left.png" alt="Previous"></button>
-  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="right.png" alt="Next"></button>
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="../assets/icons/left.png" alt="Previous"></button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="../assets/icons/right.png" alt="Next"></button>
 </div>
 
 <script>
 const pages = [
-  { img: "cowpage1.png", text: "Hannah is a cow. She lives in a shed in Bethlehem with many animals." },
-  { img: "cowpage2.png", text: "One cold night, someone knocked on the shed door." },
-  { img: "cowpage3.png", text: "A man and a woman stood outside. They looked tired and cold." },
-  { img: "cowpage4.png", text: "They asked, \"Can we come in?\" There was just enough space for them." },
-  { img: "cowpage5.png", text: "That night, all the animals slept quietly. It was very peaceful." },
-  { img: "cowpage6.png", text: "But later, there was a loud sound. A baby was born!" },
-  { img: "cowpage7.png", text: "People came to see the baby. Wise men came too." },
-  { img: "cowpage8.png", text: "They brought presents for the baby. Angels came from the sky." },
-  { img: "cowpage9.png", text: "Hannah and the animals looked at the baby. Jesus was born." }
+  { img: "../assets/stories/cowpage1.png", text: "Hannah is a cow. She lives in a shed in Bethlehem with many animals." },
+  { img: "../assets/stories/cowpage2.png", text: "One cold night, someone knocked on the shed door." },
+  { img: "../assets/stories/cowpage3.png", text: "A man and a woman stood outside. They looked tired and cold." },
+  { img: "../assets/stories/cowpage4.png", text: "They asked, \"Can we come in?\" There was just enough space for them." },
+  { img: "../assets/stories/cowpage5.png", text: "That night, all the animals slept quietly. It was very peaceful." },
+  { img: "../assets/stories/cowpage6.png", text: "But later, there was a loud sound. A baby was born!" },
+  { img: "../assets/stories/cowpage7.png", text: "People came to see the baby. Wise men came too." },
+  { img: "../assets/stories/cowpage8.png", text: "They brought presents for the baby. Angels came from the sky." },
+  { img: "../assets/stories/cowpage9.png", text: "Hannah and the animals looked at the baby. Jesus was born." }
 ];
 
 const dictionaries = {
@@ -418,7 +418,7 @@ function renderPage() {
   if (pageIndex >= pages.length) {
     container.className = "screen thankyou active";
     container.innerHTML = `
-      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <img src="../assets/icons/logo.png" class="logo" onclick="window.location.href='../index.html'">
       <h1 style="color: #758B73; font-weight: normal; font-size: 3rem;">Thank you for reading!</h1>
       <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">${getThankYouTranslation()}</h3>
       <button onclick="addCowWords()" style="margin-top: 20px; background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px;">Add to Word Vault</button>
