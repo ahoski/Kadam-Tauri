@@ -344,6 +344,248 @@
         line-height: 1.6;
       }
     }
+
+    /* ========== Lexical Inferencing Styles (2.4) ========== */
+    .sentence-context {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      line-height: 1.5;
+    }
+
+    .guess-prompt {
+      font-size: 1rem;
+      color: #333;
+      margin: 15px 0 10px 0;
+    }
+
+    .guess-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .guess-input:focus {
+      border-color: #758B73;
+      outline: none;
+    }
+
+    .guess-feedback {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .guess-feedback.correct {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .guess-feedback.incorrect {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .explanation-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f5f5f5;
+      border-left: 3px solid #758B73;
+      text-align: left;
+    }
+
+    /* ========== Grammar Pattern Noticing Styles (A) ========== */
+    .grammar-pattern {
+      border-bottom: 2px dotted #9370DB;
+      cursor: help;
+      position: relative;
+    }
+
+    .grammar-tooltip {
+      position: fixed;
+      background: #2c2c2c;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      max-width: 280px;
+      z-index: 2000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      line-height: 1.5;
+    }
+
+    .grammar-tooltip .pattern-name {
+      color: #a0d0a0;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .grammar-tooltip .pattern-desc {
+      margin-bottom: 8px;
+    }
+
+    .grammar-tooltip .pattern-examples {
+      font-size: 0.85rem;
+      color: #ccc;
+      border-top: 1px solid #444;
+      padding-top: 8px;
+      margin-top: 5px;
+    }
+
+    /* ========== Quick Recall Styles (B) ========== */
+    .recall-popup {
+      max-width: 400px;
+    }
+
+    .recall-header {
+      font-size: 1.3rem;
+      color: #758B73;
+      margin-bottom: 15px;
+    }
+
+    .recall-prompt {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .recall-hint {
+      font-size: 1rem;
+      color: #666;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .recall-feedback {
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+
+    .recall-feedback.correct {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .recall-feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* ========== Post-Reading Reflection Styles (2.3) ========== */
+    .reflection-popup {
+      max-width: 450px;
+      text-align: center;
+    }
+
+    .reflection-header {
+      font-size: 1.2rem;
+      color: #758B73;
+      margin-bottom: 20px;
+    }
+
+    .reflection-question {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .reflection-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .reflection-option {
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      background: white;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .reflection-option:hover {
+      border-color: #758B73;
+      background: #f5f5f5;
+    }
+
+    .reflection-option.selected {
+      border-color: #758B73;
+      background: #e8f5e9;
+    }
+
+    .reflection-option.correct {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+
+    .reflection-option.incorrect {
+      border-color: #dc3545;
+      background: #f8d7da;
+    }
+
+    .rating-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0 10px 0;
+    }
+
+    .rating-btn {
+      font-size: 2.5rem;
+      background: none;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rating-btn:hover {
+      border-color: #758B73;
+      transform: scale(1.1);
+    }
+
+    .rating-labels {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .rating-labels span {
+      width: 70px;
+      text-align: center;
+    }
+
+    .story-summary {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: left;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
   </style>
   <script src="tauri-api.js"></script>
 </head>
@@ -366,75 +608,304 @@
   </button>
 </div>
 
-<!-- Translation Popup -->
+<!-- Lexical Inferencing Popup (2.4) - Guess before reveal -->
 <div class="popup-overlay" id="popupOverlay">
-  <div class="popup">
-    <div class="popup-word">
-      <span id="popupWord"></span>
-      <button class="speak-btn" onclick="speakWord()" title="Listen">🔊</button>
+  <div class="popup" id="wordPopup">
+    <!-- Phase 1: Guess Phase -->
+    <div id="guessPhase">
+      <div class="popup-word">
+        <span id="popupWord"></span>
+        <button class="speak-btn" onclick="speakWord()" title="Listen">🔊</button>
+      </div>
+      <div id="sentenceContext" class="sentence-context"></div>
+      <div class="guess-prompt" id="guessPrompt"></div>
+      <input type="text" id="guessInput" class="guess-input" placeholder="" autocomplete="off">
+      <div class="popup-buttons">
+        <button class="popup-btn primary" id="checkGuessBtn" onclick="checkGuess()">Check</button>
+        <button class="popup-btn secondary" onclick="skipGuess()">I Don't Know</button>
+      </div>
     </div>
-    <div class="popup-translation" id="popupTranslation">
-      <span class="popup-loading">Getting translation...</span>
+
+    <!-- Phase 2: Reveal Phase -->
+    <div id="revealPhase" style="display: none;">
+      <div class="popup-word">
+        <span id="popupWordReveal"></span>
+        <button class="speak-btn" onclick="speakWord()" title="Listen">🔊</button>
+      </div>
+      <div id="guessFeedback" class="guess-feedback"></div>
+      <div class="popup-translation" id="popupTranslation"></div>
+      <div id="explanationText" class="explanation-text"></div>
+      <div class="popup-buttons">
+        <button class="popup-btn primary" id="addToVaultBtn" onclick="addCurrentWordToVault()" disabled>Add to Word Vault</button>
+        <button class="popup-btn secondary" onclick="closePopup()">Close</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Quick Recall Checkpoint Popup (B) -->
+<div class="popup-overlay" id="recallOverlay">
+  <div class="popup recall-popup">
+    <div class="recall-header">⏸️ Quick Recall</div>
+    <div class="recall-prompt" id="recallPrompt"></div>
+    <div class="recall-hint" id="recallHint"></div>
+    <input type="text" id="recallInput" class="guess-input" placeholder="" autocomplete="off">
+    <div id="recallFeedback" class="recall-feedback"></div>
     <div class="popup-buttons">
-      <button class="popup-btn primary" id="addToVaultBtn" onclick="addCurrentWordToVault()" disabled>Add to Word Vault</button>
-      <button class="popup-btn secondary" onclick="closePopup()">Close</button>
+      <button class="popup-btn primary" id="checkRecallBtn" onclick="checkRecall()">Check</button>
+      <button class="popup-btn secondary" id="showRecallAnswer" onclick="showRecallAnswer()">Show Answer</button>
+      <button class="popup-btn primary" id="continueRecall" onclick="continueFromRecall()" style="display:none;">Continue Reading</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post-Reading Reflection Popup (2.3) -->
+<div class="popup-overlay" id="reflectionOverlay">
+  <div class="popup reflection-popup">
+    <!-- Screen 1: Main Idea -->
+    <div id="reflectionScreen1" class="reflection-screen">
+      <div class="reflection-header" id="reflectionHeader1"></div>
+      <div class="reflection-question" id="mainIdeaQuestion"></div>
+      <div class="reflection-options" id="mainIdeaOptions"></div>
+    </div>
+
+    <!-- Screen 2: Self Rating -->
+    <div id="reflectionScreen2" class="reflection-screen" style="display:none;">
+      <div class="reflection-header" id="reflectionHeader2"></div>
+      <div class="reflection-question" id="ratingQuestion"></div>
+      <div class="rating-buttons">
+        <button class="rating-btn" onclick="submitRating(1)" title="Not well">😕</button>
+        <button class="rating-btn" onclick="submitRating(2)" title="Okay">😐</button>
+        <button class="rating-btn" onclick="submitRating(3)" title="Very well">😊</button>
+      </div>
+      <div class="rating-labels">
+        <span id="ratingLabel1"></span>
+        <span id="ratingLabel2"></span>
+        <span id="ratingLabel3"></span>
+      </div>
+    </div>
+
+    <!-- Screen 3: Summary Verification -->
+    <div id="reflectionScreen3" class="reflection-screen" style="display:none;">
+      <div class="reflection-header" id="reflectionHeader3"></div>
+      <div class="story-summary" id="storySummary"></div>
+      <div class="reflection-question" id="summaryQuestion"></div>
+      <div class="popup-buttons">
+        <button class="popup-btn primary" onclick="finishReflection()">Continue</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="stories.js"></script>
 <script>
-  // Get story ID from URL
+  // ========== CONFIGURATION ==========
+  const MAX_WORDS = 20;
+  const RECALL_INTERVAL = 2; // Show recall checkpoint every N pages
+
+  // ========== STATE ==========
   const urlParams = new URLSearchParams(window.location.search);
   const storyId = urlParams.get('id');
-
-  // Load story
   const story = getStoryById(storyId);
+
   if (!story) {
     alert('Story not found!');
     window.location.href = 'index.html';
   }
 
-  // State
   let pageIndex = -1;
-  let selectedWords = []; // Words user has added to vault this session
+  let selectedWords = []; // Words added to vault this session
   let currentWord = null;
   let currentTranslation = null;
-  const MAX_WORDS = 20;
+  let currentSentence = null;
+  let wordsLearnedThisSession = []; // For recall checkpoints
+  let pagesSinceLastRecall = 0;
+  let currentRecallWord = null;
+  let reflectionComplete = false;
+  let userRating = null;
 
-  // Get existing words from vault
+  // ========== LOCALIZATION ==========
+  const translations = {
+    hindi: {
+      instructions: 'किसी भी शब्द पर टैप करें अनुवाद देखने और सहेजने के लिए!',
+      guessPrompt: 'आपको क्या लगता है इस शब्द का मतलब क्या है?',
+      guessPlaceholder: 'अपना अनुमान यहाँ लिखें...',
+      checkBtn: 'जांचें',
+      iDontKnow: 'मुझे नहीं पता',
+      correct: '✓ बहुत बढ़िया! आपने सही अनुमान लगाया!',
+      incorrect: 'अच्छी कोशिश! सही अर्थ है:',
+      addToVault: 'वर्ड वॉल्ट में जोड़ें',
+      alreadyInVault: 'पहले से वॉल्ट में है',
+      limitReached: 'सीमा पूरी (20)',
+      saved: 'सहेजा गया!',
+      close: 'बंद करें',
+      recallPrompt: 'आपने अभी एक शब्द सीखा जिसका मतलब है:',
+      recallQuestion: 'अंग्रेजी शब्द क्या था?',
+      recallPlaceholder: 'अंग्रेजी शब्द लिखें...',
+      recallCorrect: '✓ उत्कृष्ट याददाश्त!',
+      recallIncorrect: 'शब्द था:',
+      showAnswer: 'उत्तर दिखाएं',
+      continueReading: 'पढ़ना जारी रखें',
+      reflectionHeader: '📖 कहानी प्रतिबिंब',
+      mainIdeaQ: 'इस कहानी का मुख्य विचार क्या था?',
+      ratingQ: 'आपने इस कहानी को कितनी अच्छी तरह समझा?',
+      ratingLabels: ['अच्छा नहीं', 'ठीक है', 'बहुत अच्छा'],
+      summaryHeader: '📝 कहानी का सारांश',
+      summaryQ: 'यह सारांश आपकी समझ से मेल खाता है?',
+      thankYou: 'पढ़ने के लिए धन्यवाद!',
+      wordsSaved: 'आपने {n} शब्द वर्ड वॉल्ट में सहेजे!',
+      tapWords: 'अगली बार शब्दों को सहेजने के लिए टैप करें!',
+      goToVault: 'वर्ड वॉल्ट पर जाएं',
+      backToStories: 'कहानियों पर वापस'
+    },
+    telugu: {
+      instructions: 'అనువాదం చూడటానికి మరియు సేవ్ చేయడానికి ఏదైనా పదంపై నొక్కండి!',
+      guessPrompt: 'ఈ పదం అర్థం ఏమిటి అని మీరు అనుకుంటున్నారు?',
+      guessPlaceholder: 'మీ ఊహను ఇక్కడ టైప్ చేయండి...',
+      checkBtn: 'తనిఖీ చేయండి',
+      iDontKnow: 'నాకు తెలియదు',
+      correct: '✓ అద్భుతం! మీరు సరిగ్గా ఊహించారు!',
+      incorrect: 'మంచి ప్రయత్నం! అసలు అర్థం:',
+      addToVault: 'వర్డ్ వాల్ట్‌కు జోడించండి',
+      alreadyInVault: 'ఇప్పటికే వాల్ట్‌లో ఉంది',
+      limitReached: 'పరిమితి చేరుకుంది (20)',
+      saved: 'సేవ్ చేయబడింది!',
+      close: 'మూసివేయి',
+      recallPrompt: 'మీరు ఇప్పుడే ఒక పదం నేర్చుకున్నారు దీని అర్థం:',
+      recallQuestion: 'ఆంగ్ల పదం ఏమిటి?',
+      recallPlaceholder: 'ఆంగ్ల పదం టైప్ చేయండి...',
+      recallCorrect: '✓ అద్భుతమైన జ్ఞాపకశక్తి!',
+      recallIncorrect: 'పదం:',
+      showAnswer: 'సమాధానం చూపించు',
+      continueReading: 'చదవడం కొనసాగించండి',
+      reflectionHeader: '📖 కథ ప్రతిబింబం',
+      mainIdeaQ: 'ఈ కథ యొక్క ప్రధాన ఆలోచన ఏమిటి?',
+      ratingQ: 'మీరు ఈ కథను ఎంత బాగా అర్థం చేసుకున్నారు?',
+      ratingLabels: ['బాగా కాదు', 'సరే', 'చాలా బాగా'],
+      summaryHeader: '📝 కథ సారాంశం',
+      summaryQ: 'ఈ సారాంశం మీ అవగాహనతో సరిపోతుందా?',
+      thankYou: 'చదివినందుకు ధన్యవాదాలు!',
+      wordsSaved: 'మీరు {n} పదాలను వర్డ్ వాల్ట్‌లో సేవ్ చేసారు!',
+      tapWords: 'తదుపరిసారి పదాలను సేవ్ చేయడానికి ట్యాప్ చేయండి!',
+      goToVault: 'వర్డ్ వాల్ట్‌కు వెళ్ళండి',
+      backToStories: 'కథలకు తిరిగి వెళ్ళు'
+    },
+    tamil: {
+      instructions: 'மொழிபெயர்ப்பைப் பார்க்கவும் சேமிக்கவும் எந்த வார்த்தையையும் தட்டவும்!',
+      guessPrompt: 'இந்த வார்த்தையின் பொருள் என்னவாக இருக்கும் என்று நினைக்கிறீர்கள்?',
+      guessPlaceholder: 'உங்கள் யூகத்தை இங்கே தட்டச்சு செய்யுங்கள்...',
+      checkBtn: 'சரிபார்',
+      iDontKnow: 'எனக்கு தெரியாது',
+      correct: '✓ அருமை! நீங்கள் சரியாக யூகித்தீர்கள்!',
+      incorrect: 'நல்ல முயற்சி! உண்மையான பொருள்:',
+      addToVault: 'வேர்ட் வால்ட்டில் சேர்',
+      alreadyInVault: 'ஏற்கனவே வால்ட்டில் உள்ளது',
+      limitReached: 'வரம்பு எட்டியது (20)',
+      saved: 'சேமிக்கப்பட்டது!',
+      close: 'மூடு',
+      recallPrompt: 'இப்போது நீங்கள் ஒரு வார்த்தையைக் கற்றுக்கொண்டீர்கள் அதன் பொருள்:',
+      recallQuestion: 'ஆங்கில வார்த்தை என்ன?',
+      recallPlaceholder: 'ஆங்கில வார்த்தையை தட்டச்சு செய்யுங்கள்...',
+      recallCorrect: '✓ சிறந்த நினைவாற்றல்!',
+      recallIncorrect: 'வார்த்தை:',
+      showAnswer: 'பதிலைக் காட்டு',
+      continueReading: 'படிப்பதைத் தொடரவும்',
+      reflectionHeader: '📖 கதை பிரதிபலிப்பு',
+      mainIdeaQ: 'இந்த கதையின் முக்கிய யோசனை என்ன?',
+      ratingQ: 'இந்த கதையை நீங்கள் எவ்வளவு நன்றாக புரிந்துகொண்டீர்கள்?',
+      ratingLabels: ['நன்றாக இல்லை', 'சரி', 'மிக நன்றாக'],
+      summaryHeader: '📝 கதை சுருக்கம்',
+      summaryQ: 'இந்த சுருக்கம் உங்கள் புரிதலுடன் பொருந்துகிறதா?',
+      thankYou: 'படித்ததற்கு நன்றி!',
+      wordsSaved: 'நீங்கள் {n} வார்த்தைகளை வேர்ட் வால்ட்டில் சேமித்தீர்கள்!',
+      tapWords: 'அடுத்த முறை வார்த்தைகளை சேமிக்க தட்டவும்!',
+      goToVault: 'வேர்ட் வால்ட்டுக்கு செல்',
+      backToStories: 'கதைகளுக்குத் திரும்பு'
+    }
+  };
+
+  function getLanguage() {
+    return localStorage.getItem('appLanguage') || 'hindi';
+  }
+
+  function t(key) {
+    const lang = getLanguage();
+    return translations[lang]?.[key] || translations.hindi[key] || key;
+  }
+
+  // ========== GRAMMAR PATTERNS (Feature A) ==========
+  const grammarPatterns = {
+    // Pattern: { regex, name, description, examples }
+    pastContinuous: {
+      regex: /\b(was|were)\s+(\w+ing)\b/gi,
+      name: 'Past Continuous',
+      nameHindi: 'भूतकाल निरंतर',
+      nameTelugu: 'గత నిరంతర కాలం',
+      nameTamil: 'கடந்த தொடர்ச்சியான காலம்',
+      desc: 'was/were + verb-ing = Something happening in the past',
+      descHindi: 'was/were + क्रिया-ing = अतीत में कुछ हो रहा था',
+      descTelugu: 'was/were + క్రియ-ing = గతంలో ఏదో జరుగుతోంది',
+      descTamil: 'was/were + வினை-ing = கடந்த காலத்தில் ஏதோ நடக்கிறது',
+      examples: ['She was reading', 'They were playing']
+    },
+    simplePast: {
+      regex: /\b(\w+ed)\b/gi,
+      name: 'Simple Past',
+      nameHindi: 'सामान्य भूतकाल',
+      nameTelugu: 'సాధారణ భూతకాలం',
+      nameTamil: 'எளிய கடந்த காலம்',
+      desc: 'verb + ed = Something that happened before',
+      descHindi: 'क्रिया + ed = कुछ जो पहले हुआ',
+      descTelugu: 'క్రియ + ed = ముందు జరిగింది',
+      descTamil: 'வினை + ed = முன்பு நடந்தது',
+      examples: ['walked', 'played', 'wanted']
+    },
+    futureSimple: {
+      regex: /\b(will)\s+(\w+)\b/gi,
+      name: 'Simple Future',
+      nameHindi: 'सामान्य भविष्य',
+      nameTelugu: 'సాధారణ భవిష్యత్తు',
+      nameTamil: 'எளிய எதிர்காலம்',
+      desc: 'will + verb = Something that will happen',
+      descHindi: 'will + क्रिया = कुछ जो होगा',
+      descTelugu: 'will + క్రియ = జరగబోయేది',
+      descTamil: 'will + வினை = நடக்கப்போவது',
+      examples: ['will go', 'will eat', 'will play']
+    },
+    presentContinuous: {
+      regex: /\b(is|am|are)\s+(\w+ing)\b/gi,
+      name: 'Present Continuous',
+      nameHindi: 'वर्तमान निरंतर',
+      nameTelugu: 'ప్రస్తుత నిరంతర కాలం',
+      nameTamil: 'நிகழ்கால தொடர்ச்சி',
+      desc: 'is/am/are + verb-ing = Something happening now',
+      descHindi: 'is/am/are + क्रिया-ing = अभी कुछ हो रहा है',
+      descTelugu: 'is/am/are + క్రియ-ing = ఇప్పుడు ఏదో జరుగుతోంది',
+      descTamil: 'is/am/are + வினை-ing = இப்போது ஏதோ நடக்கிறது',
+      examples: ['is running', 'am eating', 'are playing']
+    }
+  };
+
+  // ========== HELPER FUNCTIONS ==========
   function getVaultWords() {
     return JSON.parse(localStorage.getItem('wordVault') || '[]');
   }
 
-  // Get user's language preference
-  function getLanguage() {
-    return localStorage.getItem('appLanguage') || 'telugu';
+  function getSentenceContainingWord(text, word) {
+    // Split into sentences and find the one containing the word
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    for (const sentence of sentences) {
+      if (sentence.toLowerCase().includes(word.toLowerCase())) {
+        return sentence.trim();
+      }
+    }
+    return text.substring(0, 100) + '...';
   }
 
-  function getLanguageLabel() {
-    const labels = {
-      hindi: 'Hindi',
-      telugu: 'Telugu',
-      tamil: 'Tamil'
-    };
-    return labels[getLanguage()] || 'Telugu';
-  }
-
-  function getInstructionsText() {
-    const instructions = {
-      hindi: 'किसी भी शब्द पर टैप करें अनुवाद देखने और सहेजने के लिए!',
-      telugu: 'అనువాదం చూడటానికి మరియు సేవ్ చేయడానికి ఏదైనా పదంపై నొక్కండి!',
-      tamil: 'மொழிபெயர்ப்பைப் பார்க்கவும் சேமிக்கவும் எந்த வார்த்தையையும் தட்டவும்!'
-    };
-    return instructions[getLanguage()] || instructions.telugu;
-  }
-
-  // Initialize
+  // ========== INITIALIZATION ==========
   document.getElementById('storyTitle').textContent = story.title;
   document.getElementById('storyLevel').textContent = story.level + ' Level';
-  document.getElementById('instructions').textContent = getInstructionsText();
+  document.getElementById('instructions').textContent = t('instructions');
   document.title = story.title;
 
   function startBook() {
@@ -445,78 +916,78 @@
   }
 
   function changePage(direction) {
+    const oldIndex = pageIndex;
     pageIndex += direction;
     if (pageIndex < 0) pageIndex = 0;
     if (pageIndex > story.pages.length) pageIndex = story.pages.length;
+
+    // Track pages for recall checkpoint (Feature B)
+    if (direction > 0 && pageIndex > 0 && pageIndex < story.pages.length) {
+      pagesSinceLastRecall++;
+
+      // Check if we should show recall checkpoint
+      if (pagesSinceLastRecall >= RECALL_INTERVAL && wordsLearnedThisSession.length > 0) {
+        showRecallCheckpoint();
+        return; // Don't render page yet, wait for recall completion
+      }
+    }
+
     renderPage();
   }
 
   function renderPage() {
     const container = document.getElementById("screen");
 
-    // Thank you / end page
+    // End of story - show reflection first (Feature 2.3)
     if (pageIndex >= story.pages.length) {
-      container.className = "screen thankyou active";
-      document.getElementById("prevBtn").style.display = "none";
-      document.getElementById("nextBtn").style.display = "none";
-
-      let wordsHtml = '';
-      if (selectedWords.length > 0) {
-        wordsHtml = `
-          <div class="words-summary">
-            ${selectedWords.map(w => `
-              <div class="word-item">
-                <span>${w.english}</span>
-                <span>${w.translation}</span>
-              </div>
-            `).join('')}
-          </div>
-        `;
+      if (!reflectionComplete) {
+        showReflection();
+        return;
       }
-
-      container.innerHTML = `
-        <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
-        <h1 style="color: #758B73; font-weight: normal; font-size: 2.5rem;">Thank you for reading!</h1>
-        <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">
-          ${selectedWords.length > 0 ? `You saved ${selectedWords.length} word${selectedWords.length > 1 ? 's' : ''} to your Word Vault!` : 'Tap words next time to save them!'}
-        </h3>
-        ${wordsHtml}
-        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <button onclick="window.location.href='wordVault.html'" style="background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">Go to Word Vault</button>
-          <button onclick="window.location.href='index.html'" style="background: #ddd; color: #333; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">Back to Stories</button>
-        </div>
-      `;
+      showThankYouPage(container);
       return;
     }
 
     const page = story.pages[pageIndex];
     container.className = "screen book-page active";
 
-    // Convert text to clickable words
-    const textWithClickableWords = makeWordsClickable(page.text);
+    // Convert text to clickable words with grammar patterns (Feature A)
+    const textWithFeatures = processText(page.text);
 
     container.innerHTML = `
       <img src="${page.img}" alt="Page Image">
-      <div class="text-box">${textWithClickableWords}</div>
+      <div class="text-box">${textWithFeatures}</div>
     `;
 
-    // Add click handlers to words
+    // Add click handlers
     container.querySelectorAll('.word').forEach(wordEl => {
       wordEl.addEventListener('click', () => handleWordClick(wordEl));
     });
 
-    // Mark already selected words
+    // Add grammar pattern handlers
+    container.querySelectorAll('.grammar-pattern').forEach(patternEl => {
+      patternEl.addEventListener('click', (e) => showGrammarTooltip(e, patternEl));
+      patternEl.addEventListener('mouseleave', hideGrammarTooltip);
+    });
+
     markSelectedWords();
   }
 
-  function makeWordsClickable(text) {
-    // Process text while preserving HTML tags
-    // Split by HTML tags, process text parts, rejoin
-    const parts = text.split(/(<[^>]+>)/g);
+  function processText(text) {
+    // First, mark grammar patterns
+    let processed = text;
+
+    // Wrap grammar patterns with dotted underline (Feature A)
+    for (const [patternKey, pattern] of Object.entries(grammarPatterns)) {
+      processed = processed.replace(pattern.regex, (match) => {
+        return `<span class="grammar-pattern" data-pattern="${patternKey}">${match}</span>`;
+      });
+    }
+
+    // Then make individual words clickable (but not inside grammar patterns)
+    const parts = processed.split(/(<[^>]+>)/g);
     return parts.map(part => {
-      // If it's an HTML tag, leave it alone
       if (part.startsWith('<')) return part;
-      // Otherwise, wrap words in spans
       return part.replace(/([a-zA-Z]+)/g, '<span class="word" data-word="$1">$1</span>');
     }).join('');
   }
@@ -525,86 +996,187 @@
     const vaultWords = getVaultWords();
     document.querySelectorAll('.word').forEach(wordEl => {
       const word = wordEl.dataset.word.toLowerCase();
-      // Check if added this session
       if (selectedWords.some(w => w.english.toLowerCase() === word)) {
         wordEl.classList.add('selected');
-      }
-      // Check if already in vault (but not added this session)
-      else if (vaultWords.some(w => w.english.toLowerCase() === word)) {
+      } else if (vaultWords.some(w => w.english.toLowerCase() === word)) {
         wordEl.classList.add('in-vault');
       }
     });
   }
 
+  // ========== GRAMMAR TOOLTIP (Feature A) ==========
+  let activeTooltip = null;
+
+  function showGrammarTooltip(event, element) {
+    hideGrammarTooltip();
+
+    const patternKey = element.dataset.pattern;
+    const pattern = grammarPatterns[patternKey];
+    if (!pattern) return;
+
+    const lang = getLanguage();
+    const name = pattern[`name${lang.charAt(0).toUpperCase() + lang.slice(1)}`] || pattern.name;
+    const desc = pattern[`desc${lang.charAt(0).toUpperCase() + lang.slice(1)}`] || pattern.desc;
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'grammar-tooltip';
+    tooltip.innerHTML = `
+      <div class="pattern-name">${name}</div>
+      <div class="pattern-desc">${desc}</div>
+      <div class="pattern-examples">Examples: ${pattern.examples.join(', ')}</div>
+    `;
+
+    document.body.appendChild(tooltip);
+    activeTooltip = tooltip;
+
+    // Position tooltip
+    const rect = element.getBoundingClientRect();
+    tooltip.style.left = Math.min(rect.left, window.innerWidth - 300) + 'px';
+    tooltip.style.top = (rect.bottom + 10) + 'px';
+  }
+
+  function hideGrammarTooltip() {
+    if (activeTooltip) {
+      activeTooltip.remove();
+      activeTooltip = null;
+    }
+  }
+
+  // ========== LEXICAL INFERENCING (Feature 2.4) ==========
   async function handleWordClick(wordEl) {
     const word = wordEl.dataset.word;
     currentWord = word;
     currentTranslation = null;
 
-    // Show popup
-    document.getElementById('popupWord').textContent = word;
-    document.getElementById('popupTranslation').innerHTML = '<span class="popup-loading">Getting translation...</span>';
-    document.getElementById('popupOverlay').classList.add('active');
+    // Get sentence context
+    const pageText = story.pages[pageIndex]?.text || '';
+    currentSentence = getSentenceContainingWord(pageText, word);
 
-    // Check if already in vault or selected this session
+    // Check if already in vault
     const vaultWords = getVaultWords();
     const vaultEntry = vaultWords.find(w => w.english.toLowerCase() === word.toLowerCase());
     const selectedEntry = selectedWords.find(w => w.english.toLowerCase() === word.toLowerCase());
-    const addBtn = document.getElementById('addToVaultBtn');
 
     if (selectedEntry || vaultEntry) {
-      addBtn.textContent = 'Already in Vault';
-      addBtn.disabled = true;
-
-      // Use existing translation from vault
-      const existingTranslation = (selectedEntry || vaultEntry).translation;
-      currentTranslation = existingTranslation;
-      document.getElementById('popupTranslation').textContent = existingTranslation;
+      // Word already known - skip to reveal phase
+      currentTranslation = (selectedEntry || vaultEntry).translation;
+      showRevealPhase(true, true); // already known
     } else {
-      if (selectedWords.length >= MAX_WORDS) {
-        addBtn.textContent = 'Limit Reached (20)';
-        addBtn.disabled = true;
-      } else {
-        addBtn.textContent = 'Add to Word Vault';
-        addBtn.disabled = true; // Will enable after translation loads
-      }
+      // Show guess phase
+      showGuessPhase();
+    }
 
-      // Get translation from AI
-      try {
-        const translation = await getTranslation(word);
-        currentTranslation = translation;
-        document.getElementById('popupTranslation').textContent = translation;
+    document.getElementById('popupOverlay').classList.add('active');
+  }
 
-        if (selectedWords.length < MAX_WORDS) {
-          addBtn.disabled = false;
-        }
-      } catch (error) {
-        document.getElementById('popupTranslation').textContent = 'Could not get translation';
-        console.error('Translation error:', error);
-      }
+  function showGuessPhase() {
+    document.getElementById('guessPhase').style.display = 'block';
+    document.getElementById('revealPhase').style.display = 'none';
+
+    document.getElementById('popupWord').textContent = currentWord;
+    document.getElementById('sentenceContext').textContent = `"${currentSentence}"`;
+    document.getElementById('guessPrompt').textContent = t('guessPrompt');
+    document.getElementById('guessInput').placeholder = t('guessPlaceholder');
+    document.getElementById('guessInput').value = '';
+    document.getElementById('checkGuessBtn').textContent = t('checkBtn');
+
+    // Focus input
+    setTimeout(() => document.getElementById('guessInput').focus(), 100);
+  }
+
+  async function checkGuess() {
+    const guess = document.getElementById('guessInput').value.trim();
+    if (!guess) return;
+
+    // Get actual translation
+    try {
+      currentTranslation = await getTranslation(currentWord);
+    } catch (e) {
+      currentTranslation = '[Translation unavailable]';
+    }
+
+    // Simple check: see if guess contains similar characters or AI evaluation
+    const isCorrect = await evaluateGuess(guess, currentTranslation);
+
+    showRevealPhase(isCorrect, false);
+  }
+
+  async function evaluateGuess(guess, actual) {
+    // Simple heuristic: check if guess is similar to actual translation
+    // In production, could use AI for semantic similarity
+    const guessLower = guess.toLowerCase().trim();
+    const actualLower = actual.toLowerCase().trim();
+
+    // Exact match or contained
+    if (guessLower === actualLower || actualLower.includes(guessLower) || guessLower.includes(actualLower)) {
+      return true;
+    }
+
+    // For now, return false for non-matches
+    // Could add AI-based semantic similarity check here
+    return false;
+  }
+
+  function skipGuess() {
+    // Get translation and go to reveal
+    getTranslation(currentWord).then(translation => {
+      currentTranslation = translation;
+      showRevealPhase(false, false);
+    }).catch(() => {
+      currentTranslation = '[Translation unavailable]';
+      showRevealPhase(false, false);
+    });
+  }
+
+  function showRevealPhase(isCorrect, alreadyKnown) {
+    document.getElementById('guessPhase').style.display = 'none';
+    document.getElementById('revealPhase').style.display = 'block';
+
+    document.getElementById('popupWordReveal').textContent = currentWord;
+    document.getElementById('popupTranslation').textContent = currentTranslation;
+
+    const feedback = document.getElementById('guessFeedback');
+    const explanation = document.getElementById('explanationText');
+
+    if (alreadyKnown) {
+      feedback.textContent = t('alreadyInVault');
+      feedback.className = 'guess-feedback correct';
+      explanation.style.display = 'none';
+    } else if (isCorrect) {
+      feedback.textContent = t('correct');
+      feedback.className = 'guess-feedback correct';
+      explanation.style.display = 'none';
+    } else {
+      feedback.textContent = t('incorrect');
+      feedback.className = 'guess-feedback incorrect';
+      explanation.textContent = `Context: "${currentSentence}"`;
+      explanation.style.display = 'block';
+    }
+
+    // Update add button
+    const addBtn = document.getElementById('addToVaultBtn');
+    if (alreadyKnown) {
+      addBtn.textContent = t('alreadyInVault');
+      addBtn.disabled = true;
+    } else if (selectedWords.length >= MAX_WORDS) {
+      addBtn.textContent = t('limitReached');
+      addBtn.disabled = true;
+    } else {
+      addBtn.textContent = t('addToVault');
+      addBtn.disabled = false;
     }
   }
 
   async function getTranslation(word) {
-    const language = getLanguage(); // hindi, telugu, or tamil
-
-    // Check if translator is ready
+    const language = getLanguage();
     const status = await TauriAPI.checkTranslationModelStatus(language);
 
     if (!status.installed) {
-      // Fallback to simple dictionary or prompt user
-      throw new Error('Translator not downloaded. Please download it from Settings.');
+      throw new Error('Translator not available');
     }
 
-    try {
-      // Use Opus-MT via Transformers.js
-      const translation = await TauriAPI.translate(word, language);
-      // Take only the first word in case it returns multiple
-      return translation.trim().split(/\s+/)[0];
-    } catch (e) {
-      console.error('Translation error:', e);
-      throw e;
-    }
+    const translation = await TauriAPI.translate(word, language);
+    return translation.trim().split(/\s+/)[0];
   }
 
   function addCurrentWordToVault() {
@@ -614,40 +1186,41 @@
     const wordLower = currentWord.toLowerCase();
     if (selectedWords.some(w => w.english.toLowerCase() === wordLower)) return;
 
-    // Add to local selection
     const wordEntry = {
-      english: currentWord.toLowerCase(),
+      english: wordLower,
       translation: currentTranslation,
       notes: "",
       difficulty: "hard",
-      tags: []
+      tags: [],
+      addedFrom: story.title,
+      learnedAt: Date.now()
     };
-    selectedWords.push(wordEntry);
 
-    // Add to localStorage wordVault
+    selectedWords.push(wordEntry);
+    wordsLearnedThisSession.push(wordEntry); // Track for recall
+
+    // Save to localStorage
     const vault = JSON.parse(localStorage.getItem('wordVault') || '[]');
     if (!vault.some(w => w.english.toLowerCase() === wordLower)) {
       vault.push(wordEntry);
       localStorage.setItem('wordVault', JSON.stringify(vault));
     }
 
-    // Update UI
     markSelectedWords();
 
-    // Update button
-    document.getElementById('addToVaultBtn').textContent = 'Saved!';
+    document.getElementById('addToVaultBtn').textContent = t('saved');
     document.getElementById('addToVaultBtn').disabled = true;
 
-    // Close popup after short delay
-    setTimeout(() => {
-      closePopup();
-    }, 800);
+    setTimeout(closePopup, 800);
   }
 
   function closePopup() {
     document.getElementById('popupOverlay').classList.remove('active');
+    document.getElementById('guessPhase').style.display = 'block';
+    document.getElementById('revealPhase').style.display = 'none';
     currentWord = null;
     currentTranslation = null;
+    currentSentence = null;
   }
 
   function speakWord() {
@@ -659,10 +1232,254 @@
     }
   }
 
-  // Close popup on overlay click
+  // ========== QUICK RECALL CHECKPOINT (Feature B) ==========
+  function showRecallCheckpoint() {
+    // Pick a random word from this session
+    const randomIndex = Math.floor(Math.random() * wordsLearnedThisSession.length);
+    currentRecallWord = wordsLearnedThisSession[randomIndex];
+
+    document.getElementById('recallPrompt').textContent = t('recallPrompt');
+    document.getElementById('recallHint').textContent = `"${currentRecallWord.translation}"`;
+    document.getElementById('recallInput').placeholder = t('recallPlaceholder');
+    document.getElementById('recallInput').value = '';
+    document.getElementById('recallFeedback').textContent = '';
+    document.getElementById('recallFeedback').className = 'recall-feedback';
+
+    document.getElementById('checkRecallBtn').style.display = 'inline-block';
+    document.getElementById('showRecallAnswer').style.display = 'inline-block';
+    document.getElementById('continueRecall').style.display = 'none';
+
+    document.getElementById('recallOverlay').classList.add('active');
+    setTimeout(() => document.getElementById('recallInput').focus(), 100);
+  }
+
+  function checkRecall() {
+    const input = document.getElementById('recallInput').value.trim().toLowerCase();
+    const correct = currentRecallWord.english.toLowerCase();
+
+    const feedback = document.getElementById('recallFeedback');
+
+    if (input === correct) {
+      feedback.textContent = t('recallCorrect') + ` "${currentRecallWord.english}"`;
+      feedback.className = 'recall-feedback correct';
+    } else {
+      feedback.textContent = t('recallIncorrect') + ` "${currentRecallWord.english}"`;
+      feedback.className = 'recall-feedback incorrect';
+
+      // Mark for extra review
+      markWordForReview(currentRecallWord.english);
+    }
+
+    document.getElementById('checkRecallBtn').style.display = 'none';
+    document.getElementById('showRecallAnswer').style.display = 'none';
+    document.getElementById('continueRecall').style.display = 'inline-block';
+    document.getElementById('continueRecall').textContent = t('continueReading');
+  }
+
+  function showRecallAnswer() {
+    const feedback = document.getElementById('recallFeedback');
+    feedback.textContent = t('recallIncorrect') + ` "${currentRecallWord.english}"`;
+    feedback.className = 'recall-feedback incorrect';
+
+    markWordForReview(currentRecallWord.english);
+
+    document.getElementById('checkRecallBtn').style.display = 'none';
+    document.getElementById('showRecallAnswer').style.display = 'none';
+    document.getElementById('continueRecall').style.display = 'inline-block';
+    document.getElementById('continueRecall').textContent = t('continueReading');
+  }
+
+  function markWordForReview(word) {
+    // Store words that need extra review
+    const reviewList = JSON.parse(localStorage.getItem('wordsForReview') || '[]');
+    if (!reviewList.includes(word.toLowerCase())) {
+      reviewList.push(word.toLowerCase());
+      localStorage.setItem('wordsForReview', JSON.stringify(reviewList));
+    }
+  }
+
+  function continueFromRecall() {
+    document.getElementById('recallOverlay').classList.remove('active');
+    pagesSinceLastRecall = 0;
+    renderPage();
+  }
+
+  // ========== POST-READING REFLECTION (Feature 2.3) ==========
+  function showReflection() {
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+
+    // Setup reflection screens
+    setupReflectionScreen1();
+
+    document.getElementById('reflectionOverlay').classList.add('active');
+  }
+
+  function setupReflectionScreen1() {
+    document.getElementById('reflectionScreen1').style.display = 'block';
+    document.getElementById('reflectionScreen2').style.display = 'none';
+    document.getElementById('reflectionScreen3').style.display = 'none';
+
+    document.getElementById('reflectionHeader1').textContent = t('reflectionHeader');
+    document.getElementById('mainIdeaQuestion').textContent = t('mainIdeaQ');
+
+    // Generate main idea options based on story (simplified - could use AI)
+    const options = generateMainIdeaOptions();
+    const optionsContainer = document.getElementById('mainIdeaOptions');
+    optionsContainer.innerHTML = options.map((opt, i) =>
+      `<button class="reflection-option" onclick="selectMainIdea(${i}, ${opt.correct})">${opt.text}</button>`
+    ).join('');
+  }
+
+  function generateMainIdeaOptions() {
+    // Generate plausible options - in production, could use AI
+    // For now, use story-specific data if available, or generic options
+    const storyMainIdeas = {
+      'little_red_hen': [
+        { text: 'Hard work is rewarded, and those who don\'t help shouldn\'t share the reward', correct: true },
+        { text: 'Hens are better than other animals', correct: false },
+        { text: 'Bread is difficult to make', correct: false }
+      ],
+      'day_met_joe': [
+        { text: 'Meeting new friends can change your life', correct: true },
+        { text: 'Dogs are the best pets', correct: false },
+        { text: 'Going outside is dangerous', correct: false }
+      ]
+    };
+
+    return storyMainIdeas[storyId] || [
+      { text: 'The story teaches an important lesson', correct: true },
+      { text: 'The story is just for entertainment', correct: false },
+      { text: 'The story has no meaning', correct: false }
+    ];
+  }
+
+  window.selectMainIdea = function(index, isCorrect) {
+    const options = document.querySelectorAll('.reflection-option');
+    options.forEach((opt, i) => {
+      opt.classList.remove('selected', 'correct', 'incorrect');
+      if (i === index) {
+        opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+      }
+    });
+
+    // Move to next screen after delay
+    setTimeout(() => {
+      document.getElementById('reflectionScreen1').style.display = 'none';
+      setupReflectionScreen2();
+    }, 1000);
+  };
+
+  function setupReflectionScreen2() {
+    document.getElementById('reflectionScreen2').style.display = 'block';
+
+    document.getElementById('reflectionHeader2').textContent = t('reflectionHeader');
+    document.getElementById('ratingQuestion').textContent = t('ratingQ');
+
+    const labels = t('ratingLabels');
+    document.getElementById('ratingLabel1').textContent = labels[0];
+    document.getElementById('ratingLabel2').textContent = labels[1];
+    document.getElementById('ratingLabel3').textContent = labels[2];
+  }
+
+  window.submitRating = function(rating) {
+    userRating = rating;
+
+    // Store rating for analytics
+    const ratings = JSON.parse(localStorage.getItem('storyRatings') || '{}');
+    ratings[storyId] = { rating, timestamp: Date.now() };
+    localStorage.setItem('storyRatings', JSON.stringify(ratings));
+
+    document.getElementById('reflectionScreen2').style.display = 'none';
+    setupReflectionScreen3();
+  };
+
+  function setupReflectionScreen3() {
+    document.getElementById('reflectionScreen3').style.display = 'block';
+
+    document.getElementById('reflectionHeader3').textContent = t('summaryHeader');
+
+    // Get story summary - could be AI-generated or pre-written
+    const summary = getStorySummary();
+    document.getElementById('storySummary').textContent = summary;
+    document.getElementById('summaryQuestion').textContent = t('summaryQ');
+  }
+
+  function getStorySummary() {
+    const lang = getLanguage();
+    const summaries = {
+      'little_red_hen': {
+        hindi: 'एक मुर्गी ने गेहूं के बीज पाए। उसने अन्य जानवरों से मदद मांगी लेकिन किसी ने मदद नहीं की। उसने अकेले गेहूं बोया, काटा, और रोटी बनाई। जब रोटी तैयार हुई, तो सभी खाना चाहते थे, लेकिन मुर्गी ने अकेले खाया क्योंकि किसी ने काम में मदद नहीं की थी।',
+        telugu: 'ఒక కోడి గోధుమ గింజలు కనుగొంది. ఆమె ఇతర జంతువులను సహాయం అడిగింది కానీ ఎవరూ సహాయం చేయలేదు. ఆమె ఒంటరిగా గోధుమ నాటింది, కోసింది మరియు రొట్టె చేసింది. రొట్టె సిద్ధమైనప్పుడు అందరూ తినాలనుకున్నారు, కానీ కోడి ఒంటరిగా తింది ఎందుకంటే ఎవరూ పనిలో సహాయం చేయలేదు.',
+        tamil: 'ஒரு கோழி கோதுமை விதைகளைக் கண்டுபிடித்தது. அவள் மற்ற விலங்குகளிடம் உதவி கேட்டாள் ஆனால் யாரும் உதவ வில்லை. அவள் தனியாக கோதுமையை விதைத்து, அறுவடை செய்து, ரொட்டி செய்தாள். ரொட்டி தயாரானபோது எல்லோரும் சாப்பிட விரும்பினர், ஆனால் கோழி தனியாக சாப்பிட்டது ஏனென்றால் யாரும் வேலையில் உதவ வில்லை.'
+      }
+    };
+
+    return summaries[storyId]?.[lang] || 'This story teaches us an important lesson about life and values.';
+  }
+
+  window.finishReflection = function() {
+    document.getElementById('reflectionOverlay').classList.remove('active');
+    reflectionComplete = true;
+    renderPage(); // This will now show thank you page
+  };
+
+  function showThankYouPage(container) {
+    container.className = "screen thankyou active";
+
+    let wordsHtml = '';
+    if (selectedWords.length > 0) {
+      wordsHtml = `
+        <div class="words-summary">
+          ${selectedWords.map(w => `
+            <div class="word-item">
+              <span>${w.english}</span>
+              <span>${w.translation}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    const wordsSavedText = selectedWords.length > 0
+      ? t('wordsSaved').replace('{n}', selectedWords.length)
+      : t('tapWords');
+
+    container.innerHTML = `
+      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <h1 style="color: #758B73; font-weight: normal; font-size: 2.5rem;">${t('thankYou')}</h1>
+      <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">${wordsSavedText}</h3>
+      ${wordsHtml}
+      <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+        <button onclick="window.location.href='wordVault.html'" style="background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">${t('goToVault')}</button>
+        <button onclick="window.location.href='index.html'" style="background: #ddd; color: #333; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">${t('backToStories')}</button>
+      </div>
+    `;
+  }
+
+  // ========== EVENT LISTENERS ==========
   document.getElementById('popupOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'popupOverlay') {
-      closePopup();
+    if (e.target.id === 'popupOverlay') closePopup();
+  });
+
+  document.getElementById('recallOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'recallOverlay') {
+      // Don't allow closing recall by clicking outside
+    }
+  });
+
+  document.getElementById('guessInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') checkGuess();
+  });
+
+  document.getElementById('recallInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') checkRecall();
+  });
+
+  // Close grammar tooltip when clicking elsewhere
+  document.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('grammar-pattern')) {
+      hideGrammarTooltip();
     }
   });
 </script>
