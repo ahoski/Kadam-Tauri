@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Vault</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, serif;
+      background-color: #85867b;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #A9AAA3;
+      padding: 15px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .add-btn {
+      background: #85867b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .add-btn:hover {
+      background: #6b7063;
+    }
+
+    .filters {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 15px 20px;
+      z-index: 999;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+      border-bottom: 2px solid #A9AAA3;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #A9AAA3 #f0f0f0;
+    }
+    
+    .filters::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .filters::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+    
+    .filters::-webkit-scrollbar-thumb {
+      background: #A9AAA3;
+      border-radius: 3px;
+    }
+
+    .filter-btn {
+      background: white;
+      border: 2px solid #A9AAA3;
+      border-radius: 5px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      color: #333;
+      flex-shrink: 0;
+    }
+    
+    .tag-filter-btn {
+      background: white;
+      border: 2px solid #A9AAA3;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      color: #333;
+      flex-shrink: 0;
+    }
+    
+    .tag-filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+    
+    .tag-filter-btn.active {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .filter-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .filter-btn.active {
+      background: #85867b;
+      color: white;
+      border-color: #85867b;
+    }
+
+    .difficulty-dot, .tag-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .easy-dot { background-color: #d4fbe1; }
+    .medium-dot { background-color: #fff8cc; }
+    .hard-dot { background-color: #fddddd; }
+    
+    /* Tag color dots */
+    .tag-orange { background-color: #fccc9b; }
+    .tag-yellow { background-color: #FFE066; }
+    .tag-green { background-color: #72a573; }
+    .tag-aqua { background-color: #539f9f; }
+    .tag-purple { background-color: #a78cc1; }
+    .tag-grey { background-color: #A0A0A0; }
+    .tag-black { background-color: #333333; }
+
+    .main-content {
+      margin-top: 160px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .frame {
+      width: 90%;
+      max-width: 1000px;
+      background-color: white;
+      padding: 40px;
+      border: 10px solid #A9AAA3;
+      min-height: 70vh;
+    }
+
+    .filter-status {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #666;
+      font-style: italic;
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+
+    .delete-icon {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .action-cell {
+      width: 20%;
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    .table-difficulty-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    .table-tag-dots {
+      display: inline-flex;
+      gap: 5px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    .table-tag-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .easy { background-color: #d4fbe1; }
+    .medium { background-color: #fff8cc; }
+    .hard { background-color: #fddddd; }
+
+    td.word-cell {
+      cursor: pointer;
+    }
+
+    td.word-cell.has-note {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+
+    .table-row.hidden {
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .add-tag-btn {
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: transform 0.2s ease;
+    }
+    
+    .add-tag-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Selection mode */
+    .select-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin-right: 10px;
+      display: none;
+    }
+    
+    .select-mode .select-checkbox {
+      display: inline-block;
+    }
+    
+    .select-mode th:first-child {
+      width: 40px;
+    }
+    
+    .selection-actions {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 2px solid #A9AAA3;
+      border-radius: 8px;
+      padding: 15px 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .selection-actions.show {
+      display: flex;
+    }
+    
+    .selection-count {
+      margin-right: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .save-tags-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      transition: background-color 0.2s ease;
+    }
+    
+    .save-tags-btn:hover {
+      background: #388E3C;
+    }
+    
+    .cancel-selection-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      transition: background-color 0.2s ease;
+    }
+    
+    .cancel-selection-btn:hover {
+      background: #d32f2f;
+    }
+    
+    /* Edit words button */
+    .edit-words-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #525653;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      display: none;
+      z-index: 1001;
+    }
+    
+    .edit-words-btn:hover {
+      background: #858585;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    .edit-words-btn.show {
+      display: block;
+    }
+
+    /* Popup Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup {
+      background: white;
+      border: 2px solid #A9AAA3;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      font-family: Georgia, serif;
+    }
+
+    .popup h3 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.3rem;
+    }
+
+    .popup .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      font-weight: bold;
+    }
+
+    .popup .close-btn:hover {
+      color: #333;
+    }
+
+    .popup input, .popup textarea, .popup select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-family: Georgia, serif;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .popup button {
+      background: #85867b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .popup button:hover {
+      background: #6b7063;
+    }
+    
+    .delete-btn {
+      background: #be706b !important;
+      float: right;
+    }
+    
+    .delete-btn:hover {
+      background: #8d5f5f !important;
+    }
+
+    .error-msg {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+    
+    /* Color selector */
+    .color-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    
+    .color-option.selected {
+      border-color: #333;
+      transform: scale(1.2);
+    }
+    
+    /* Word selector in tag edit */
+    .word-selector {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .word-checkbox-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .word-checkbox-item:last-child {
+      border-bottom: none;
+    }
+    
+    .word-checkbox-item input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    
+    .word-checkbox-item label {
+      cursor: pointer;
+      flex: 1;
+      user-select: none;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 12px 15px;
+      }
+
+      .logo {
+        width: 40px;
+        height: 40px;
+      }
+
+      .filters {
+        top: 70px;
+        padding: 10px 15px;
+        gap: 8px;
+      }
+
+      .filter-btn, .tag-filter-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+
+      .main-content {
+        margin-top: 130px;
+        padding: 10px;
+      }
+
+      .frame {
+        width: 100%;
+        padding: 20px;
+        border: 5px solid #A9AAA3;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 8px 4px;
+      }
+
+      .action-cell {
+        width: 25%;
+      }
+
+      .delete-icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      .table-difficulty-dot {
+        width: 14px;
+        height: 14px;
+        margin-right: 8px;
+      }
+      
+      .table-tag-dot {
+        width: 12px;
+        height: 12px;
+      }
+
+      .popup {
+        width: 95%;
+        padding: 15px;
+        margin: 10px;
+      }
+      
+      .edit-words-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+      
+      .selection-actions {
+        bottom: 15px;
+        padding: 12px 15px;
+        width: 90%;
+        left: 5%;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 10px;
+      }
+      
+      .add-btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+
+      .filter-btn, .tag-filter-btn {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+      }
+
+      .difficulty-dot, .tag-dot {
+        width: 14px;
+        height: 14px;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 6px 2px;
+      }
+      
+      .main-content {
+        margin-top: 120px;
+        padding: 5px;
+      }
+      
+      .frame {
+        padding: 15px;
+      }
+      
+      .filter-status {
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <div class="header">
+    <img src="logo.png" class="logo" onclick="window.location.href='index.html'" alt="Home">
+    <div class="header-actions">
+      <button class="add-btn" onclick="openAddPopup()">Add New Word</button>
+    </div>
+  </div>
+
+  <div class="filters" id="filtersContainer">
+    <div class="filter-btn active" id="allFilter" data-filter="all">
+      All Words
+    </div>
+    <div class="filter-btn" id="easyFilter" data-filter="easy">
+      <span class="difficulty-dot easy-dot"></span> Easy
+    </div>
+    <div class="filter-btn" id="mediumFilter" data-filter="medium">
+      <span class="difficulty-dot medium-dot"></span> Medium
+    </div>
+    <div class="filter-btn" id="hardFilter" data-filter="hard">
+      <span class="difficulty-dot hard-dot"></span> Hard
+    </div>
+    <img src="plus.png" class="add-tag-btn" onclick="openCreateTagModal()" title="Create new tag">
+  </div>
+
+  <div class="main-content">
+    <div class="frame">
+      <div class="filter-status" id="filterStatus"></div>
+      <table id="vaultTable">
+        <thead>
+          <tr>
+            <th style="width: 40px; display: none;"></th>
+            <th>English</th>
+            <th id="translationHeader">Translation</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Edit Words Button (shown when viewing a tag) -->
+  <button class="edit-words-btn" id="editWordsBtn" onclick="openEditTagWordsModal()">Edit Words</button>
+
+  <!-- Note Popup -->
+  <div class="popup-overlay" id="notePopupOverlay">
+    <div class="popup">
+      <button class="close-btn" onclick="closeNotePopup()">&times;</button>
+      <h3>Notes</h3>
+      <div id="noteText"></div>
+    </div>
+  </div>
+
+  <!-- Add Word Popup -->
+  <div class="popup-overlay" id="addPopupOverlay">
+    <div class="popup">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Add New Word</h3>
+        <img src="plus.png" onclick="closeAddPopup()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+      </div>
+      <input type="text" id="englishInput" placeholder="English word (required)" />
+      <input type="text" id="teluguInput" placeholder="Translation (optional)" />      
+      <textarea id="notesInput" placeholder="Notes (optional)"></textarea>
+      <select id="difficultyInput">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard" selected>Hard</option>
+      </select>
+      <button onclick="addWord()">Add</button>
+      <div class="error-msg" id="errorMsg">Must add English word</div>
+    </div>
+  </div>
+  
+  <!-- Create Tag Popup -->
+  <div class="popup-overlay" id="createTagPopupOverlay">
+    <div class="popup">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Create New Tag</h3>
+        <img src="plus.png" onclick="closeCreateTagModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+      </div>
+      <input type="text" id="newTagInput" placeholder="Enter tag name..." />
+      <label style="display: block; margin: 15px 0 10px 0;">Choose a color:</label>
+      <div class="color-selector">
+        <div class="color-option tag-orange" data-color="orange" onclick="selectColor('orange')"></div>
+        <div class="color-option tag-yellow" data-color="yellow" onclick="selectColor('yellow')"></div>
+        <div class="color-option tag-green" data-color="green" onclick="selectColor('green')"></div>
+        <div class="color-option tag-aqua selected" data-color="aqua" onclick="selectColor('aqua')"></div>
+        <div class="color-option tag-purple" data-color="purple" onclick="selectColor('purple')"></div>
+        <div class="color-option tag-grey" data-color="grey" onclick="selectColor('grey')"></div>
+        <div class="color-option tag-black" data-color="black" onclick="selectColor('black')"></div>
+      </div>
+      <button onclick="createNewTag()">Create Tag</button>
+      <div class="error-msg" id="tagErrorMsg">Please enter a tag name</div>
+    </div>
+  </div>
+  
+  <!-- Edit Tag Options Popup -->
+  <div class="popup-overlay" id="editTagOptionsPopupOverlay">
+    <div class="popup">
+      <button class="close-btn" onclick="closeEditTagOptionsModal()">&times;</button>
+      <h3>Edit Tag: <span id="editingTagName"></span></h3>
+      <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+        <button onclick="openRemoveWordsModal()" style="padding: 15px; font-size: 16px;">Remove Words from Tag</button>
+        <button onclick="openAddWordsModal()" style="padding: 15px; font-size: 16px;">Add Words to Tag</button>
+        <button class="delete-btn" onclick="deleteCurrentTag()" style="padding: 15px; font-size: 16px;">Delete Tag</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Selection Actions Bar -->
+  <div class="selection-actions" id="selectionActions">
+    <span class="selection-count" id="selectionCount">0 words selected</span>
+    <button class="save-tags-btn" id="selectionActionBtn" onclick="handleSelectionAction()">Submit</button>
+    <button class="cancel-selection-btn" onclick="cancelSelection()">Cancel</button>
+  </div>
+
+  <script>
+    let vaultWords = JSON.parse(localStorage.getItem("wordVault") || "[]");
+    let currentFilter = 'all';
+    let lastClickTime = 0;
+    let lastClickedFilter = null;
+    let customTags = JSON.parse(localStorage.getItem("customTags") || "[]");
+    let selectedTagColor = 'aqua';
+    let currentEditingTag = null;
+    let selectionMode = null; // 'remove' or 'add'
+    let selectedWords = new Set();
+
+    // UI Translations
+    const uiTranslations = {
+      hindi: {
+        wordVault: "शब्द भंडार",
+        addNewWord: "नया शब्द जोड़ें",
+        allWords: "सभी शब्द",
+        easy: "आसान",
+        medium: "मध्यम",
+        hard: "कठिन",
+        english: "अंग्रेज़ी",
+        translation: "अनुवाद",
+        notes: "नोट्स",
+        add: "जोड़ें",
+        delete: "हटाएं",
+        save: "सेव करें",
+        cancel: "रद्द करें",
+        createNewTag: "नया टैग बनाएं",
+        enterTagName: "टैग नाम दर्ज करें...",
+        chooseColor: "रंग चुनें:",
+        createTag: "टैग बनाएं",
+        pleaseEnterTagName: "कृपया टैग नाम दर्ज करें",
+        editTag: "टैग संपादित करें:",
+        removeWordsFromTag: "टैग से शब्द हटाएं",
+        addWordsToTag: "टैग में शब्द जोड़ें",
+        deleteTag: "टैग हटाएं",
+        wordsSelected: "शब्द चुने गए",
+        submit: "जमा करें",
+        noWordsYet: "अभी तक कोई शब्द नहीं!",
+        startBuilding: "अपना पहला शब्द जोड़कर अपनी शब्दावली बनाना शुरू करें।",
+        englishWordRequired: "अंग्रेज़ी शब्द (आवश्यक)",
+        translationOptional: "अनुवाद (वैकल्पिक)",
+        notesOptional: "नोट्स (वैकल्पिक)",
+        mustAddEnglishWord: "अंग्रेज़ी शब्द जोड़ना होगा",
+        showing: "दिखा रहे हैं",
+        words: "शब्द",
+        taggedWith: "टैग के साथ",
+        editWords: "शब्द संपादित करें",
+        confirmDelete: "क्या आप वाकई इस शब्द को हटाना चाहते हैं?",
+        confirmDeleteTag: "क्या आप वाकई इस टैग को हटाना चाहते हैं?"
+      },
+      telugu: {
+        wordVault: "పద భాండాగారం",
+        addNewWord: "కొత్త పదం జోడించండి",
+        allWords: "అన్ని పదాలు",
+        easy: "సులభం",
+        medium: "మధ్యస్థం",
+        hard: "కఠినం",
+        english: "ఇంగ్లీష్",
+        translation: "అనువాదం",
+        notes: "గమనికలు",
+        add: "జోడించు",
+        delete: "తొలగించు",
+        save: "సేవ్ చేయి",
+        cancel: "రద్దు చేయి",
+        createNewTag: "కొత్త ట్యాగ్ సృష్టించండి",
+        enterTagName: "ట్యాగ్ పేరు నమోదు చేయండి...",
+        chooseColor: "రంగు ఎంచుకోండి:",
+        createTag: "ట్యాగ్ సృష్టించు",
+        pleaseEnterTagName: "దయచేసి ట్యాగ్ పేరు నమోదు చేయండి",
+        editTag: "ట్యాగ్ సవరించు:",
+        removeWordsFromTag: "ట్యాగ్ నుండి పదాలను తీసివేయండి",
+        addWordsToTag: "ట్యాగ్‌కు పదాలను జోడించండి",
+        deleteTag: "ట్యాగ్‌ను తొలగించు",
+        wordsSelected: "పదాలు ఎంపిక చేయబడ్డాయి",
+        submit: "సమర్పించు",
+        noWordsYet: "ఇంకా పదాలు లేవు!",
+        startBuilding: "మీ మొదటి పదాన్ని జోడించడం ద్వారా మీ పదజాలాన్ని నిర్మించడం ప్రారంభించండి.",
+        englishWordRequired: "ఇంగ్లీష్ పదం (అవసరం)",
+        translationOptional: "అనువాదం (ఐచ్ఛికం)",
+        notesOptional: "గమనికలు (ఐచ్ఛికం)",
+        mustAddEnglishWord: "ఇంగ్లీష్ పదాన్ని జోడించాలి",
+        showing: "చూపిస్తోంది",
+        words: "పదాలు",
+        taggedWith: "ట్యాగ్ చేయబడింది",
+        editWords: "పదాలను సవరించు",
+        confirmDelete: "మీరు ఖచ్చితంగా ఈ పదాన్ని తొలగించాలనుకుంటున్నారా?",
+        confirmDeleteTag: "మీరు ఖచ్చితంగా ఈ ట్యాగ్‌ను తొలగించాలనుకుంటున్నారా?"
+      },
+      tamil: {
+        wordVault: "சொல் பெட்டகம்",
+        addNewWord: "புதிய சொல் சேர்",
+        allWords: "அனைத்து சொற்கள்",
+        easy: "எளிது",
+        medium: "நடுத்தரம்",
+        hard: "கடினம்",
+        english: "ஆங்கிலம்",
+        translation: "மொழிபெயர்ப்பு",
+        notes: "குறிப்புகள்",
+        add: "சேர்",
+        delete: "நீக்கு",
+        save: "சேமி",
+        cancel: "ரத்து",
+        createNewTag: "புதிய குறிச்சொல் உருவாக்கு",
+        enterTagName: "குறிச்சொல் பெயரை உள்ளிடுக...",
+        chooseColor: "நிறம் தேர்வு செய்:",
+        createTag: "குறிச்சொல் உருவாக்கு",
+        pleaseEnterTagName: "குறிச்சொல் பெயரை உள்ளிடவும்",
+        editTag: "குறிச்சொல் திருத்து:",
+        removeWordsFromTag: "குறிச்சொல்லிலிருந்து சொற்களை நீக்கு",
+        addWordsToTag: "குறிச்சொல்லில் சொற்கள் சேர்",
+        deleteTag: "குறிச்சொல் நீக்கு",
+        wordsSelected: "சொற்கள் தேர்ந்தெடுக்கப்பட்டன",
+        submit: "சமர்ப்பி",
+        noWordsYet: "இன்னும் சொற்கள் இல்லை!",
+        startBuilding: "உங்கள் முதல் சொல்லை சேர்த்து உங்கள் சொற்களஞ்சியத்தை உருவாக்கத் தொடங்குங்கள்.",
+        englishWordRequired: "ஆங்கில சொல் (தேவை)",
+        translationOptional: "மொழிபெயர்ப்பு (விருப்பம்)",
+        notesOptional: "குறிப்புகள் (விருப்பம்)",
+        mustAddEnglishWord: "ஆங்கில சொல் சேர்க்க வேண்டும்",
+        showing: "காண்பிக்கிறது",
+        words: "சொற்கள்",
+        taggedWith: "குறிச்சொல்",
+        editWords: "சொற்களை திருத்து",
+        confirmDelete: "இந்த சொல்லை நீக்க விரும்புகிறீர்களா?",
+        confirmDeleteTag: "இந்த குறிச்சொல்லை நீக்க விரும்புகிறீர்களா?"
+      }
+    };
+
+    // UI is always in English (this is an English learning app)
+    // The translation function now just returns the key (English text)
+    function t(key) {
+      return key;
+    }
+
+    // UI stays in English, but update translation column header to show the language name
+    function applyTranslations() {
+      // Update the translation column header to show the selected language
+      const lang = localStorage.getItem('appLanguage') || 'hindi';
+      const languageNames = {
+        hindi: 'Hindi',
+        telugu: 'Telugu',
+        tamil: 'Tamil'
+      };
+      const header = document.getElementById('translationHeader');
+      if (header) {
+        header.textContent = languageNames[lang] || 'Translation';
+      }
+    }
+
+    function deleteWord(index) {
+      if (confirm('Are you sure you want to delete this word?')) {
+        vaultWords.splice(index, 1);
+        localStorage.setItem("wordVault", JSON.stringify(vaultWords));
+        renderTable();
+      }
+    }
+
+    function filterWords(filter) {
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - lastClickTime;
+      
+      // Double-click detection (within 300ms)
+      if (timeDiff < 300 && lastClickedFilter === filter && filter !== 'all') {
+        currentFilter = 'all';
+        updateFilterDisplay();
+        renderTable();
+        return;
+      }
+      
+      lastClickTime = currentTime;
+      lastClickedFilter = filter;
+      
+      currentFilter = filter;
+      updateFilterDisplay();
+      renderTable();
+    }
+
+    function updateFilterDisplay() {
+      const filterStatus = document.getElementById('filterStatus');
+      const filters = document.querySelectorAll('.filter-btn, .tag-filter-btn');
+      const editWordsBtn = document.getElementById('editWordsBtn');
+      
+      // Remove active class from all filters
+      filters.forEach(filter => filter.classList.remove('active'));
+      
+      if (currentFilter === 'all') {
+        document.getElementById('allFilter').classList.add('active');
+        filterStatus.style.display = 'none';
+        editWordsBtn.classList.remove('show');
+      } else if (['easy', 'medium', 'hard'].includes(currentFilter)) {
+        document.getElementById(`${currentFilter}Filter`).classList.add('active');
+        const count = vaultWords.filter(word => word.difficulty === currentFilter).length;
+        filterStatus.style.display = 'block';
+        filterStatus.textContent = `Showing ${count} ${currentFilter} words`;
+        editWordsBtn.classList.remove('show');
+      } else {
+        // Custom tag
+        const tagBtn = document.querySelector(`[data-filter="${currentFilter}"]`);
+        if (tagBtn) tagBtn.classList.add('active');
+        const count = vaultWords.filter(word => word.tags && word.tags.includes(currentFilter)).length;
+        filterStatus.style.display = 'block';
+        filterStatus.textContent = `Showing ${count} words tagged with "${currentFilter}"`;
+        editWordsBtn.classList.add('show');
+        currentEditingTag = currentFilter;
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector("#vaultTable tbody");
+      tbody.innerHTML = "";
+      
+      // Update table header visibility
+      const checkboxHeader = document.querySelector("#vaultTable th:first-child");
+      if (selectionMode) {
+        checkboxHeader.style.display = '';
+        document.body.classList.add('select-mode');
+      } else {
+        checkboxHeader.style.display = 'none';
+        document.body.classList.remove('select-mode');
+      }
+      
+      if (vaultWords.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 40px; color: #666;">
+              <div class="empty-state">
+                <h3>No words yet!</h3>
+                <p>Start building your vocabulary by adding your first word.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      vaultWords.forEach((word, index) => {
+        const { english, telugu, translation, notes, difficulty = "hard", tags = [] } = word;
+        const displayTranslation = translation || telugu; // Support both old and new format
+        const tr = document.createElement("tr");
+        tr.className = "table-row";
+        
+        // Apply filter
+        let shouldShow = true;
+        if (currentFilter !== 'all') {
+          if (currentFilter === 'easy' || currentFilter === 'medium' || currentFilter === 'hard') {
+            shouldShow = difficulty === currentFilter;
+          } else {
+            shouldShow = tags.includes(currentFilter);
+          }
+        }
+        
+        // Additional filtering for selection modes
+        if (selectionMode === 'remove' && currentEditingTag) {
+          shouldShow = tags.includes(currentEditingTag);
+        } else if (selectionMode === 'add' && currentEditingTag) {
+          shouldShow = !tags.includes(currentEditingTag);
+        }
+        
+        if (!shouldShow) {
+          tr.classList.add('hidden');
+        }
+        
+        // Checkbox cell
+        const checkboxCell = document.createElement("td");
+        checkboxCell.style.display = selectionMode ? '' : 'none';
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "select-checkbox";
+        checkbox.checked = selectedWords.has(index);
+        checkbox.onchange = () => toggleWordSelection(index);
+        checkboxCell.appendChild(checkbox);
+        
+        const englishCell = document.createElement("td");
+        englishCell.textContent = english;
+        englishCell.classList.add("word-cell");
+        if (notes) {
+          englishCell.classList.add("has-note");
+          englishCell.addEventListener("click", () => {
+            if (!selectionMode) {
+              document.getElementById("noteText").innerText = notes;
+              document.getElementById("notePopupOverlay").style.display = "flex";
+            }
+          });
+        }
+        
+        const translationCell = document.createElement("td");
+        translationCell.textContent = displayTranslation || "-";
+        
+        const actionsCell = document.createElement("td");
+        actionsCell.className = "action-cell";
+        
+        // Tag dots
+        const tagDots = document.createElement("span");
+        tagDots.className = "table-tag-dots";
+        tags.forEach(tagName => {
+          const tag = customTags.find(t => t.name === tagName);
+          if (tag) {
+            const dot = document.createElement("span");
+            dot.className = `table-tag-dot tag-${tag.color}`;
+            dot.title = tagName;
+            tagDots.appendChild(dot);
+          }
+        });
+        
+        const difficultyDot = document.createElement("span");
+        difficultyDot.className = `table-difficulty-dot ${difficulty}`;
+        
+        const deleteIcon = document.createElement("img");
+        deleteIcon.src = 'delete.png';
+        deleteIcon.className = "delete-icon";
+        deleteIcon.alt = "Delete";
+        deleteIcon.onclick = () => {
+          deleteWord(index);
+          // Track for tutorial
+          if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'deleteWord') {
+            window.tutorialGuide.handleStepCompletion();
+          }
+        };
+        deleteIcon.style.display = selectionMode ? 'none' : '';
+        
+        actionsCell.appendChild(tagDots);
+        actionsCell.appendChild(difficultyDot);
+        actionsCell.appendChild(deleteIcon);
+        
+        tr.appendChild(checkboxCell);
+        tr.appendChild(englishCell);
+        tr.appendChild(translationCell);
+        tr.appendChild(actionsCell);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function closeNotePopup() {
+      document.getElementById('notePopupOverlay').style.display = 'none';
+    }
+
+    function openAddPopup() {
+      document.getElementById('addPopupOverlay').style.display = 'flex';
+      document.getElementById('englishInput').value = '';
+      document.getElementById('teluguInput').value = '';
+      document.getElementById('notesInput').value = '';
+      document.getElementById('difficultyInput').value = 'hard';
+      document.getElementById('errorMsg').style.display = 'none';
+      
+      // Track for tutorial - just clear elements, don't complete step yet
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'addNewWord') {
+        window.tutorialGuide.clearTutorialElements();
+      }
+    }
+
+    function closeAddPopup() {
+      document.getElementById('addPopupOverlay').style.display = 'none';
+      
+      // Track for tutorial - complete step when modal closes
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'addNewWord') {
+        window.tutorialGuide.handleStepCompletion();
+      }
+    }
+
+    function addWord() {
+      const english = document.getElementById('englishInput').value.trim();
+      const translation = document.getElementById('teluguInput').value.trim();
+      const notes = document.getElementById('notesInput').value.trim();
+      const difficulty = document.getElementById('difficultyInput').value;
+
+      if (!english) {
+        document.getElementById('errorMsg').style.display = 'block';
+        return;
+      }
+
+      vaultWords.push({ english, translation, notes, difficulty, tags: [] });
+      localStorage.setItem("wordVault", JSON.stringify(vaultWords));
+      closeAddPopup();
+      renderTable();
+      updateFilterDisplay();
+    }
+    
+    // Tag-related functions
+    function openCreateTagModal() {
+      document.getElementById('createTagPopupOverlay').style.display = 'flex';
+      document.getElementById('newTagInput').value = '';
+      document.getElementById('tagErrorMsg').style.display = 'none';
+      selectColor('aqua');
+      
+      // Track for tutorial - just clear elements, don't complete step yet
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'createTag') {
+        window.tutorialGuide.clearTutorialElements();
+      }
+    }
+    
+    function closeCreateTagModal() {
+      document.getElementById('createTagPopupOverlay').style.display = 'none';
+      
+      // Track for tutorial - complete step when modal closes
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'createTag') {
+        window.tutorialGuide.handleStepCompletion();
+      }
+    }
+    
+    function selectColor(color) {
+      selectedTagColor = color;
+      document.querySelectorAll('.color-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+    }
+    
+    function createNewTag() {
+      const tagName = document.getElementById('newTagInput').value.trim();
+      
+      if (!tagName) {
+        document.getElementById('tagErrorMsg').style.display = 'block';
+        return;
+      }
+      
+      if (customTags.some(tag => tag.name === tagName) || ['easy', 'medium', 'hard'].includes(tagName.toLowerCase())) {
+        document.getElementById('tagErrorMsg').textContent = 'This tag already exists';
+        document.getElementById('tagErrorMsg').style.display = 'block';
+        return;
+      }
+      
+      customTags.push({ name: tagName, color: selectedTagColor });
+      localStorage.setItem('customTags', JSON.stringify(customTags));
+      updateTagsDisplay();
+      closeCreateTagModal();
+      
+      // Track for tutorial
+      if (window.tutorialGuide) {
+        window.tutorialGuide.trackTagCreated();
+      }
+    }
+    
+    function updateTagsDisplay() {
+      const filtersContainer = document.getElementById('filtersContainer');
+      
+      // Remove existing custom tag buttons
+      const existingTags = filtersContainer.querySelectorAll('.tag-filter-btn');
+      existingTags.forEach(tag => tag.remove());
+      
+      // Add custom tag buttons before the add button
+      const addBtn = filtersContainer.querySelector('.add-tag-btn');
+      customTags.forEach(tag => {
+        const tagBtn = document.createElement('div');
+        tagBtn.className = 'tag-filter-btn';
+        tagBtn.setAttribute('data-filter', tag.name);
+        tagBtn.onclick = () => filterWords(tag.name);
+        
+        const dot = document.createElement('span');
+        dot.className = `tag-dot tag-${tag.color}`;
+        
+        const text = document.createElement('span');
+        text.textContent = tag.name;
+        
+        tagBtn.appendChild(dot);
+        tagBtn.appendChild(text);
+        filtersContainer.insertBefore(tagBtn, addBtn);
+      });
+    }
+    
+    // New tag editing functions
+    function openEditTagWordsModal() {
+      if (!currentEditingTag) return;
+      document.getElementById('editingTagName').textContent = currentEditingTag;
+      document.getElementById('editTagOptionsPopupOverlay').style.display = 'flex';
+    }
+    
+    function closeEditTagOptionsModal() {
+      document.getElementById('editTagOptionsPopupOverlay').style.display = 'none';
+    }
+    
+    function openRemoveWordsModal() {
+      closeEditTagOptionsModal();
+      selectionMode = 'remove';
+      selectedWords.clear();
+      currentFilter = currentEditingTag; // Show only words in this tag
+      updateFilterDisplay();
+      renderTable();
+      updateSelectionDisplay();
+    }
+    
+    function openAddWordsModal() {
+      closeEditTagOptionsModal();
+      selectionMode = 'add';
+      selectedWords.clear();
+      currentFilter = 'all'; // Show all words
+      updateFilterDisplay();
+      renderTable();
+      updateSelectionDisplay();
+    }
+    
+    function toggleWordSelection(index) {
+      if (selectedWords.has(index)) {
+        selectedWords.delete(index);
+      } else {
+        selectedWords.add(index);
+      }
+      updateSelectionDisplay();
+    }
+    
+    function updateSelectionDisplay() {
+      const selectionActions = document.getElementById('selectionActions');
+      const selectionCount = document.getElementById('selectionCount');
+
+      if (selectedWords.size > 0) {
+        selectionActions.classList.add('show');
+        selectionCount.textContent = `${selectedWords.size} words selected`;
+      } else {
+        selectionActions.classList.remove('show');
+      }
+    }
+    
+    function handleSelectionAction() {
+      if (selectionMode === 'remove') {
+        // Remove selected words from tag
+        selectedWords.forEach(index => {
+          const word = vaultWords[index];
+          if (word.tags) {
+            word.tags = word.tags.filter(tag => tag !== currentEditingTag);
+          }
+        });
+      } else if (selectionMode === 'add') {
+        // Add selected words to tag
+        selectedWords.forEach(index => {
+          const word = vaultWords[index];
+          if (!word.tags) word.tags = [];
+          if (!word.tags.includes(currentEditingTag)) {
+            word.tags.push(currentEditingTag);
+          }
+        });
+      }
+      
+      localStorage.setItem('wordVault', JSON.stringify(vaultWords));
+      cancelSelection();
+      
+      // Track for tutorial if adding words to tag
+      if (selectionMode === 'add' && window.tutorialGuide) {
+        window.tutorialGuide.trackWordTagged();
+      }
+    }
+    
+    function cancelSelection() {
+      selectionMode = null;
+      selectedWords.clear();
+      currentFilter = currentEditingTag || 'all';
+      updateSelectionDisplay();
+      updateFilterDisplay();
+      renderTable();
+    }
+    
+    function deleteCurrentTag() {
+      if (!currentEditingTag) return;
+
+      if (confirm('Are you sure you want to delete this tag?')) {
+        // Remove tag from custom tags
+        customTags = customTags.filter(tag => tag.name !== currentEditingTag);
+        localStorage.setItem('customTags', JSON.stringify(customTags));
+        
+        // Remove tag from all words
+        vaultWords.forEach(word => {
+          if (word.tags) {
+            word.tags = word.tags.filter(tag => tag !== currentEditingTag);
+          }
+        });
+        localStorage.setItem('wordVault', JSON.stringify(vaultWords));
+        
+        closeEditTagOptionsModal();
+        filterWords('all');
+        updateTagsDisplay();
+      }
+    }
+
+    // Initialize event listeners
+    function initializeFilters() {
+      document.getElementById('allFilter').addEventListener('click', () => filterWords('all'));
+      document.getElementById('easyFilter').addEventListener('click', () => filterWords('easy'));
+      document.getElementById('mediumFilter').addEventListener('click', () => filterWords('medium'));
+      document.getElementById('hardFilter').addEventListener('click', () => filterWords('hard'));
+    }
+
+    // Close popups when clicking overlay
+    document.getElementById('notePopupOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeNotePopup();
+    });
+
+    document.getElementById('addPopupOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeAddPopup();
+    });
+    
+    document.getElementById('createTagPopupOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeCreateTagModal();
+    });
+    
+    document.getElementById('editTagOptionsPopupOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeEditTagOptionsModal();
+    });
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      applyTranslations();
+      initializeFilters();
+      updateTagsDisplay();
+      renderTable();
+      updateFilterDisplay();
+    });
+
+    // Initialize immediately if DOM is already loaded
+    if (document.readyState !== 'loading') {
+      applyTranslations();
+      initializeFilters();
+      updateTagsDisplay();
+      renderTable();
+      updateFilterDisplay();
+    }
+  </script>
+  <script src="onboarding-interactive.js"></script>
+</body>
+</html>

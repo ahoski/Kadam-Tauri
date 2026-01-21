@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>G3 Language Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #98B482;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .logo {
+      position: fixed;
+      top: 35px;
+      left: 35px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Start Screen Styles */
+    .start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quiz-title {
+      font-size: 72px;
+      color: black;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .quiz-subtitle {
+      font-size: 18px;
+      color: #333;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      margin-bottom: 40px;
+    }
+
+    .start-btn {
+      background: #BAD8A4;
+      color: black;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      font-size: 18px;
+      padding: 15px 40px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .start-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Loading Screen Styles */
+    .loading-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-screen .loading-bar {
+      width: 300px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .loading-screen .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: #6C815C;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    /* Quiz Wrapper Styles */
+    .quiz-wrapper {
+      display: none;
+      background: #D2CFB9;
+      width: 100%;
+      max-width: 1400px;
+      min-height: 97vh;
+      padding: 40px;
+      position: relative;
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 60px;
+    }
+
+    .quiz-header-title {
+      font-size: 48px;
+      color: black;
+      font-weight: normal;
+      text-align: center;
+      width: 100%;
+    }
+
+    .current-word-bar {
+      background: #B9B6A1;
+      padding: 15px 20px;
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: black;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: transparent;
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #85867B;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      background: #B9B6A1;
+      padding: 25px;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .question-text {
+      font-size: 20px;
+      color: black;
+      font-weight: normal;
+    }
+
+    .question-number {
+      font-size: 18px;
+      color: #555;
+    }
+
+    .options-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .option {
+      background: #D2CFB9;
+      padding: 25px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      color: black;
+      border: none;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+
+    .option:hover {
+      background: #C4C1A5;
+    }
+
+    .option.selected {
+      background: #A8A68A;
+      outline: 3px solid #85867B;
+    }
+
+    .option.correct {
+      background: #98B482;
+      outline: 3px solid #6C815C;
+    }
+
+    .option.wrong {
+      background: #C4A484;
+      outline: 3px solid #8B7355;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-family: Georgia, 'Times New Roman', serif;
+      border: none;
+      background: #D2CFB9;
+      color: black;
+      margin-bottom: 20px;
+    }
+
+    .text-input:focus {
+      outline: 3px solid #85867B;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      font-size: 18px;
+      padding: 15px 50px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn {
+      background: #98B482;
+      color: black;
+    }
+
+    .next-btn {
+      background: #98B482;
+      color: black;
+      display: none;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 15px 20px;
+      font-size: 16px;
+      display: none;
+    }
+
+    .feedback.correct {
+      background: #98B482;
+      color: black;
+    }
+
+    .feedback.incorrect {
+      background: #C4A484;
+      color: black;
+    }
+
+    .difficulty-buttons {
+      display: none;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .difficulty-btn {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+    }
+
+    .easy-btn {
+      background: #98B482;
+      color: black;
+    }
+
+    .medium-btn {
+      background: #D2CFB9;
+      color: black;
+    }
+
+    .hard-btn {
+      background: #C4A484;
+      color: black;
+    }
+
+    .difficulty-btn:hover {
+      opacity: 0.8;
+    }
+
+    .reorder-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .reorder-item {
+      background: #D2CFB9;
+      padding: 10px 15px;
+      cursor: grab;
+      user-select: none;
+      font-size: 16px;
+      color: black;
+    }
+
+    .reorder-answer {
+      min-height: 60px;
+      border: 2px dashed #85867B;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .paragraph-text {
+      background: #D2CFB9;
+      padding: 20px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-size: 16px;
+      color: black;
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 40px 20px;
+      color: black;
+    }
+
+    .quiz-complete h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .quiz-complete p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      background: #98B482;
+      color: black;
+      border: none;
+      padding: 15px 30px;
+      cursor: pointer;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+    }
+
+    .restart-btn:hover {
+      opacity: 0.9;
+    }
+    
+    .customize-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .template-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      z-index: 1000;
+    }
+    
+    .template-btn img {
+      width: 30px;
+      height: 30px;
+    }
+    
+    /* Templates Modal */
+    .template-item {
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .template-item:hover {
+      background: #e8e8e8;
+    }
+    
+    .template-name {
+      font-weight: 600;
+      color: #2D5A5A;
+    }
+    
+    .template-details {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .template-delete {
+      background: #be706b;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .customize-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 70px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      z-index: 1000;
+    }
+    
+    .customize-btn img {
+      width: 30px;
+      height: 30px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      overflow-y: auto;
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 20px;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: black;
+    }
+    
+    .modal h2 {
+      color: #2D5A5A;
+      margin-bottom: 25px;
+    }
+    
+    .question-type-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 10px;
+    }
+    
+    .question-type-label {
+      font-weight: 600;
+      color: #2D5A5A;
+    }
+    
+    .number-input {
+      width: 60px;
+      padding: 8px;
+      border: 2px solid #D4ECEC;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    .mcq-options {
+      margin-left: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .mcq-options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    
+    .tag-selector {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f0f8f8;
+      border-radius: 10px;
+    }
+    
+    .tag-selector h3 {
+      margin-bottom: 15px;
+      color: #2D5A5A;
+    }
+    
+    .tag-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .tag-option {
+      padding: 8px 15px;
+      background: #e0f2f2;
+      border: 2px solid transparent;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .tag-option:hover {
+      background: #d0e8e8;
+    }
+    
+    .tag-option.selected {
+      background: #8CB7B7;
+      color: white;
+      border-color: #6B9999;
+    }
+    
+    .save-template {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    
+    .modal-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .save-play-btn {
+      background: #5a9a5d;
+      color: white;
+    }
+    
+    .cancel-btn {
+      background: #f5f5f5;
+      color: #666;
+    }
+    
+    .modal-btn:hover {
+      opacity: 0.9;
+    }
+    
+    /* Tags Bar Styles */
+    .tags-bar {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      display: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .tags-container {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      white-space: nowrap;
+    }
+    
+    @media (max-width: 768px) {
+      .tags-bar {
+        padding: 8px 12px;
+        margin-bottom: 20px;
+      }
+      
+      .tags-container {
+        gap: 10px;
+      }
+      
+      .tags-bar::-webkit-scrollbar {
+        height: 4px;
+      }
+      
+      .tags-bar::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+      }
+      
+      .tags-bar::-webkit-scrollbar-thumb {
+        background: #8CB7B7;
+        border-radius: 2px;
+      }
+    }
+    
+    .tag {
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      user-select: none;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .tag.easy {
+      background: #A5D6A7;
+      color: black;
+    }
+    
+    .tag.medium {
+      background: #d5ce8e;
+      color: black;
+    }
+    
+    .tag.hard {
+      background: #FFCDD2;
+      color: black;
+    }
+    
+    .tag.custom {
+      background: #90CAF9;
+      color: black;
+    }
+    
+    .tag:hover {
+      transform: translateY(-2px);
+    }
+    
+    .add-tag-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+    
+    .add-tag-btn img {
+      width: 25px;
+      height: 25px;
+    }
+    
+    /* Tag Creation Modal */
+    .tag-modal {
+      padding: 20px;
+    }
+    
+    .tag-input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #D4ECEC;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    
+    /* Delete Tag Modal */
+    .delete-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .delete-option {
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .delete-option:hover {
+      background: #e8e8e8;
+    }
+    
+    /* Question container - transparent to show question-box background */
+    .question-container {
+      background: transparent;
+      padding: 0;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    /* Options grid for MCQ */
+    .options-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .option {
+      background: #D2CFB9;
+      padding: 25px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      color: black;
+      border: none;
+      text-align: center;
+      transition: background 0.2s ease;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .option:hover {
+      background: #C4C1A5;
+    }
+
+    .option.selected {
+      background: #A8A68A;
+      outline: 3px solid #85867B;
+    }
+
+    .option.correct {
+      background: #98B482;
+      outline: 3px solid #6C815C;
+    }
+
+    .option.wrong {
+      background: #C4A484;
+      outline: 3px solid #8B7355;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-family: Georgia, 'Times New Roman', serif;
+      border: none;
+      background: #D2CFB9;
+      color: black;
+      margin-bottom: 20px;
+    }
+
+    .text-input:focus {
+      outline: 3px solid #85867B;
+    }
+
+    .reorder-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .reorder-item {
+      background: #D2CFB9;
+      padding: 10px 15px;
+      cursor: grab;
+      user-select: none;
+      font-size: 16px;
+      color: black;
+      transition: background 0.2s ease;
+    }
+
+    .reorder-item:hover {
+      background: #C4C1A5;
+    }
+
+    .reorder-answer {
+      min-height: 60px;
+      border: 2px dashed #85867B;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .reorder-answer.dragover {
+      border-color: #6C815C;
+      background: rgba(152, 180, 130, 0.2);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      font-size: 18px;
+      padding: 15px 50px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn {
+      background: #98B482;
+      color: black;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn:disabled {
+      background: #CCCCCC;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .next-btn {
+      background: #98B482;
+      color: black;
+      display: none;
+    }
+
+    .next-btn:hover {
+      opacity: 0.9;
+    }
+
+    .reset-btn {
+      background: #D2CFB9;
+      color: black;
+      margin-left: 10px;
+    }
+
+    .reset-btn:hover {
+      opacity: 0.9;
+    }
+
+    .word-info {
+      display: none;
+    }
+
+    .word-info-text {
+      display: none;
+    }
+
+    .current-word {
+      font-weight: normal;
+      color: black;
+      font-size: 18px;
+    }
+
+    .difficulty-buttons {
+      display: none;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .rate-prompt-mobile {
+      display: none;
+    }
+
+    .difficulty-btn {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+    }
+
+    .easy-btn {
+      background: #98B482;
+      color: black;
+    }
+
+    .medium-btn {
+      background: #D5C779;
+      color: black;
+    }
+
+    .hard-btn {
+      background: #C4A484;
+      color: black;
+    }
+
+    .difficulty-btn:hover {
+      opacity: 0.8;
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 40px 20px;
+      color: black;
+    }
+
+    .quiz-complete h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .quiz-complete p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      background: #98B482;
+      color: black;
+      border: none;
+      padding: 15px 30px;
+      cursor: pointer;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+    }
+
+    .restart-btn:hover {
+      opacity: 0.9;
+    }
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+      text-align: center;
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      font-size: 18px;
+      color: black;
+      font-weight: normal;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(108, 129, 92, 0.3);
+      border-radius: 50%;
+      border-top-color: #6C815C;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .paragraph-text {
+      background: #D2CFB9;
+      padding: 20px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-size: 16px;
+      color: black;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .quiz-wrapper {
+        padding: 20px;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        left: 20px;
+      }
+
+      .quiz-title {
+        font-size: 36px;
+      }
+
+      .quiz-subtitle {
+        font-size: 16px;
+      }
+
+      .quiz-header-title {
+        font-size: 36px;
+      }
+
+      .loading-screen .loading-bar {
+        width: 250px;
+      }
+
+      .options-container {
+        grid-template-columns: 1fr;
+      }
+
+      .question-text {
+        font-size: 18px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .difficulty-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .difficulty-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .tag-selector {
+        padding: 15px;
+      }
+
+      .tag-option {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+
+      .modal-content {
+        margin: 10% auto;
+        padding: 20px;
+      }
+
+      .question-type-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .mcq-options {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .tag {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+
+      .tags-bar {
+        padding: 8px 15px;
+      }
+
+      .start-screen {
+        padding: 30px 20px;
+      }
+
+      .start-btn {
+        font-size: 18px;
+        padding: 12px 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .quiz-wrapper {
+        padding: 15px;
+      }
+
+      .question-text {
+        font-size: 16px;
+      }
+
+      .option {
+        padding: 15px;
+        font-size: 15px;
+      }
+
+      .difficulty-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .tag {
+        padding: 5px 10px;
+        font-size: 13px;
+      }
+
+      .add-tag-btn img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .number-input {
+        width: 50px;
+      }
+
+      .start-btn {
+        font-size: 16px;
+        padding: 10px 25px;
+      }
+
+      .start-screen {
+        padding: 30px 30px 70px 30px;
+      }
+
+      .customize-btn {
+        bottom: -35px;
+      }
+
+      .customize-btn img {
+        width: 25px;
+        height: 25px;
+      }
+    }
+    
+    /* Hints Overlay Styles */
+    #hintsOverlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      background-color: white;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.5s ease-in-out;
+      overflow-y: auto;
+    }
+    
+    #hintsOverlay.show {
+      transform: translateY(0);
+    }
+    
+    #hintsOverlay iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Error message styles */
+    .error-message {
+      color: #F44336;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+  <link rel="stylesheet" href="onboarding.css">
+  <script src="tauri-api.js"></script>
+</head>
+<body>
+  <img src="logo.png" alt="Quiz Logo" class="logo" onclick="goToHome()">
+
+  <!-- Start Screen -->
+  <div class="start-screen" id="startScreen">
+    <div class="quiz-title">Quiz</div>
+    <div class="quiz-subtitle">Test what you've learned so far.</div>
+    <button class="start-btn" onclick="startDefaultQuiz()">Start Quiz</button>
+  </div>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="quiz-title">Quiz</div>
+    <div class="quiz-subtitle">Test what you've learned so far.</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
+    </div>
+  </div>
+
+  <!-- Quiz Wrapper -->
+  <div class="quiz-wrapper" id="quizWrapper">
+    <div class="quiz-header">
+      <div class="quiz-header-title">Quiz</div>
+    </div>
+
+    <div class="current-word-bar" id="currentWordBar">Current Word : <span id="currentWord">Loading...</span></div>
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="question-box" id="questionBox">
+      <div class="question-container" id="questionContainer">
+        <!-- Questions will be populated here -->
+      </div>
+    </div>
+
+    <div id="difficultyButtons" class="difficulty-buttons">
+      <span style="margin-right: 10px;">Rate this word:</span>
+      <button class="difficulty-btn easy-btn" onclick="rateWord('easy')">Easy</button>
+      <button class="difficulty-btn medium-btn" onclick="rateWord('medium')">Medium</button>
+      <button class="difficulty-btn hard-btn" onclick="rateWord('hard')">Hard</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Buttons -->
+  <button class="customize-btn" id="customizeBtn" onclick="openCustomizeModal()">
+    <img src="edit.png" alt="Customize Quiz">
+  </button>
+  <button class="template-btn" id="templateBtn" onclick="openTemplatesModal()">
+    <img src="template.png" alt="Quiz Templates">
+  </button>
+  
+  <!-- Tags Bar (hidden initially) - REMOVED FROM QUIZ PAGE -->
+  
+  <!-- Old Question Container (hidden, kept for compatibility) -->
+  <div id="oldQuestionContainer" style="display: none;">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loadingText">Loading quiz... 0%</div>
+    </div>
+  </div>
+  
+  <!-- Customize Quiz Modal -->
+  <div id="customizeModal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Customize Your Quiz</h2>
+        <img src="plus.png" onclick="closeCustomizeModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+      </div>
+      
+      <div class="question-type-row">
+        <div class="question-type-label">MCQ Questions</div>
+        <div>
+          <input type="number" class="number-input" id="mcqCount" min="0" max="20" value="0">
+          <div class="mcq-options">
+            <label><input type="radio" name="mcqType" value="english" checked> English</label>
+            <label><input type="radio" name="mcqType" value="translation" id="translationRadio"> Translation</label>
+            <label><input type="radio" name="mcqType" value="both"> Both</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="question-type-row">
+        <div class="question-type-label">Free Response Questions</div>
+        <input type="number" class="number-input" id="freeCount" min="0" max="5" value="0">
+      </div>
+      
+      <div class="question-type-row">
+        <div class="question-type-label">Passage Based Questions</div>
+        <input type="number" class="number-input" id="passageCount" min="0" max="5" value="0">
+      </div>
+      
+      <div class="question-type-row">
+        <div class="question-type-label">Reorder Questions</div>
+        <input type="number" class="number-input" id="reorderCount" min="0" max="5" value="0">
+      </div>
+      
+      <div class="tag-selector">
+        <h3>Select Word Groups (Optional)</h3>
+        <div class="tag-options" id="tagOptions">
+          <div class="tag-option" data-tag="easy" onclick="toggleTagOption(this)">Easy</div>
+          <div class="tag-option" data-tag="medium" onclick="toggleTagOption(this)">Medium</div>
+          <div class="tag-option" data-tag="hard" onclick="toggleTagOption(this)">Hard</div>
+          <div class="tag-option selected" data-tag="default" onclick="toggleTagOption(this)">All Words</div>
+        </div>
+      </div>
+      
+      <div class="save-template">
+        <label><input type="checkbox" id="saveAsTemplate"> Save as template</label>
+        <label><input type="checkbox" id="saveAsDefault"> Save as default</label>
+      </div>
+      
+      <div class="error-message" id="customizeError"></div>
+      
+      <div class="modal-buttons">
+        <button class="modal-btn save-play-btn" onclick="saveAndPlay()">Save</button>
+        <button class="modal-btn cancel-btn" onclick="closeCustomizeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create Tag Modal -->
+  <div id="createTagModal" class="modal">
+    <div class="modal-content tag-modal">
+      <span class="close" onclick="closeCreateTagModal()">&times;</span>
+      <h2>Create New Tag</h2>
+      <input type="text" class="tag-input" id="newTagName" placeholder="Enter tag name...">
+      <div class="modal-buttons">
+        <button class="modal-btn save-play-btn" onclick="createNewTag()">Create Tag</button>
+        <button class="modal-btn cancel-btn" onclick="closeCreateTagModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Tag Modal -->
+  <div id="deleteTagModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDeleteTagModal()">&times;</span>
+      <h2>Delete Tag: <span id="deleteTagName"></span></h2>
+      <div class="delete-options">
+        <div class="delete-option" onclick="deleteTag(false)">
+          <strong>Delete tag only</strong>
+          <p>Keep all words in the tag</p>
+        </div>
+        <div class="delete-option" onclick="deleteTag(true)">
+          <strong>Delete tag and contents</strong>
+          <p>Remove tag and all words tagged with it</p>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel-btn" onclick="closeDeleteTagModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Hints Overlay -->
+  <div id="hintsOverlay" style="display: none;"></div>
+  
+  <!-- Templates Modal -->
+  <div id="templatesModal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Quiz Templates</h2>
+        <img src="plus.png" onclick="closeTemplatesModal()" style="width: 24px; height: 24px; transform: rotate(45deg); cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" alt="Close">
+      </div>
+      <div id="templatesList">
+        <p style="text-align: center; color: #666;">No templates saved yet</p>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel-btn" onclick="closeTemplatesModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Template Name Modal -->
+  <div id="templateNameModal" class="modal">
+    <div class="modal-content tag-modal">
+      <span class="close" onclick="closeTemplateNameModal()">&times;</span>
+      <h2>Save Template</h2>
+      <input type="text" class="tag-input" id="templateNameInput" placeholder="Enter template name...">
+      <div class="modal-buttons">
+        <button class="modal-btn save-play-btn" onclick="saveTemplateWithName()">Save & Play</button>
+        <button class="modal-btn cancel-btn" onclick="closeTemplateNameModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // API configuration moved to Workers endpoint
+    const MODEL = "@cf/meta/llama-3.1-8b-instruct";
+    
+    // State variables
+    let wordVault = [];
+    let selectedWords = [];
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let selectedOption = null;
+    let currentWord = null;
+    let isAnswerCorrect = false;
+    let loadingProgress = 0;
+    let incorrectQuestions = [];
+    let questionsAnswered = 0;
+    let totalQuestions = 0;
+    let canRateWord = false;
+    let quizConfig = null;
+    let customTags = [];
+    let tagToDelete = null;
+    let pendingQuizConfig = null;
+    let savedTemplates = [];
+    
+    // Elements
+    const startScreen = document.getElementById('startScreen');
+    const questionContainer = document.getElementById('questionContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progress = document.getElementById('progress');
+    const loadingText = document.getElementById('loadingText');
+    const currentWordElement = document.getElementById('currentWord');
+    const difficultyButtons = document.getElementById('difficultyButtons');
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      loadWordVault();
+      loadCustomTags();
+      loadDefaultQuizConfig();
+      loadTemplates();
+      updateLanguageLabels();
+    });
+
+    // Update language labels based on selected language
+    function updateLanguageLabels() {
+      const lang = localStorage.getItem('appLanguage') || 'hindi';
+      const labels = {
+        hindi: 'Hindi',
+        telugu: 'Telugu',
+        tamil: 'Tamil'
+      };
+      const langLabel = labels[lang] || 'Translation';
+
+      // Update the translation radio button label
+      const translationRadio = document.getElementById('translationRadio');
+      if (translationRadio && translationRadio.parentElement) {
+        translationRadio.parentElement.innerHTML = `<input type="radio" name="mcqType" value="translation" id="translationRadio"> ${langLabel}`;
+      }
+    }
+    
+    // Go to home function
+    function goToHome() {
+      window.location.href = 'index.html';
+    }
+    
+    // Load word vault from localStorage
+    function loadWordVault() {
+      try {
+        const storedVault = localStorage.getItem('wordVault');
+        if (storedVault) {
+          wordVault = JSON.parse(storedVault);
+          console.log(`Loaded ${wordVault.length} words from localStorage`);
+        } else {
+          console.warn('No word vault found in localStorage');
+          wordVault = [];
+        }
+      } catch (error) {
+        console.error("Error loading word vault:", error);
+        wordVault = [];
+      }
+    }
+    
+    // Load custom tags
+    function loadCustomTags() {
+      const storedTags = localStorage.getItem('customTags');
+      if (storedTags) {
+        try {
+          customTags = JSON.parse(storedTags);
+          updateTagsDisplay();
+        } catch (e) {
+          console.error('Error loading custom tags:', e);
+          customTags = [];
+        }
+      }
+    }
+    
+    // Update tags display
+    function updateTagsDisplay() {
+      // Update tag options in customize modal
+      const tagOptions = document.getElementById('tagOptions');
+      if (tagOptions) {
+        // Clear existing custom options
+        const existingOptions = tagOptions.querySelectorAll('.tag-option:not([data-tag="easy"]):not([data-tag="medium"]):not([data-tag="hard"]):not([data-tag="default"])');
+        existingOptions.forEach(opt => opt.remove());
+        
+        customTags.forEach(tag => {
+          const tagName = typeof tag === 'string' ? tag : tag.name;
+          const option = document.createElement('div');
+          option.className = 'tag-option';
+          option.textContent = tagName;
+          option.setAttribute('data-tag', tagName);
+          option.addEventListener('click', function() {
+            toggleTagOption(this);
+          });
+          tagOptions.insertBefore(option, tagOptions.lastElementChild);
+        });
+      }
+    }
+    
+    // Get tag color
+    function getTagColor(colorName) {
+      const colors = {
+        'orange': '#FFB366',
+        'yellow': '#FFE066',
+        'green': '#66D9A0',
+        'aqua': '#66D9D9',
+        'purple': '#B366FF',
+        'grey': '#A0A0A0',
+        'black': '#333333'
+      };
+      return colors[colorName] || colors['aqua'];
+    }
+    
+    // Load default quiz configuration
+    function loadDefaultQuizConfig() {
+      const storedConfig = localStorage.getItem('defaultQuizConfig');
+      if (storedConfig) {
+        quizConfig = JSON.parse(storedConfig);
+      }
+    }
+    
+    // Start default quiz
+    function startDefaultQuiz() {
+      // Track for tutorial
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'startQuizInfo') {
+        window.tutorialGuide.clearTutorialElements();
+        window.tutorialGuide.checkpoints.startQuizInfoShown = true;
+        window.tutorialGuide.checkpoints.tutorialComplete = true;
+        window.tutorialGuide.saveProgress();
+
+        // Show completion message after a short delay
+        setTimeout(() => {
+          window.tutorialGuide.completeTutorial();
+        }, 500);
+      }
+
+      // Hide start screen, show loading screen
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('loadingScreen').style.display = 'flex';
+
+      // Hide navigation buttons when starting quiz
+      document.getElementById('customizeBtn').style.display = 'none';
+      document.getElementById('templateBtn').style.display = 'none';
+      
+      if (quizConfig) {
+        // Use saved default configuration
+        startQuizWithConfig(quizConfig);
+      } else {
+        // Use hardcoded default
+        startQuizWithConfig({
+          mcqCount: 4,
+          mcqType: 'both',
+          freeCount: 2,
+          passageCount: 1,
+          reorderCount: 2,
+          selectedTags: ['hard']
+        });
+      }
+    }
+    
+    // Open customize modal
+    function openCustomizeModal() {
+      document.getElementById('customizeModal').style.display = 'block';
+      
+      // Track for tutorial
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'customizeQuiz') {
+        window.tutorialGuide.handleStepCompletion();
+      }
+      
+      // Load saved template if exists
+      const savedTemplate = localStorage.getItem('quizTemplate');
+      if (savedTemplate) {
+        const template = JSON.parse(savedTemplate);
+        document.getElementById('mcqCount').value = template.mcqCount || 0;
+        document.querySelector(`input[name="mcqType"][value="${template.mcqType}"]`).checked = true;
+        document.getElementById('freeCount').value = template.freeCount || 0;
+        document.getElementById('passageCount').value = template.passageCount || 0;
+        document.getElementById('reorderCount').value = template.reorderCount || 0;
+        
+        // Set selected tags
+        document.querySelectorAll('.tag-option').forEach(option => {
+          option.classList.remove('selected');
+          if (template.selectedTags && template.selectedTags.includes(option.getAttribute('data-tag'))) {
+            option.classList.add('selected');
+          }
+        });
+      }
+    }
+    
+    // Close customize modal
+    function closeCustomizeModal() {
+      document.getElementById('customizeModal').style.display = 'none';
+      document.getElementById('customizeError').textContent = '';
+      
+      // Show next tutorial step if active
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.checkpoints.customizeShown) {
+        setTimeout(() => {
+          window.tutorialGuide.showNextStep();
+        }, 300);
+      }
+    }
+    
+    // Toggle tag option
+    function toggleTagOption(option) {
+      if (option.getAttribute('data-tag') === 'default') {
+        // If default is selected, deselect all others
+        document.querySelectorAll('.tag-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        option.classList.add('selected');
+      } else {
+        // Deselect default if selecting specific tags
+        document.querySelector('[data-tag="default"]').classList.remove('selected');
+        option.classList.toggle('selected');
+        
+        // If no tags selected, select default
+        if (!document.querySelector('.tag-option.selected:not([data-tag="default"])')) {
+          document.querySelector('[data-tag="default"]').classList.add('selected');
+        }
+      }
+    }
+    
+    // Save and play
+    function saveAndPlay() {
+      const mcqCount = parseInt(document.getElementById('mcqCount').value) || 0;
+      const freeCount = parseInt(document.getElementById('freeCount').value) || 0;
+      const passageCount = parseInt(document.getElementById('passageCount').value) || 0;
+      const reorderCount = parseInt(document.getElementById('reorderCount').value) || 0;
+      const mcqType = document.querySelector('input[name="mcqType"]:checked').value;
+      
+      const total = mcqCount + freeCount + passageCount + reorderCount;
+      
+      // Validate
+      if (total < 5) {
+        document.getElementById('customizeError').textContent = 'Minimum 5 questions required';
+        return;
+      }
+      
+      if (total > 25) {
+        document.getElementById('customizeError').textContent = 'Maximum 25 questions allowed';
+        return;
+      }
+      
+      if (mcqCount > 20) {
+        document.getElementById('customizeError').textContent = 'Maximum 20 MCQ questions allowed';
+        return;
+      }
+      
+      if (freeCount > 5) {
+        document.getElementById('customizeError').textContent = 'Maximum 5 free response questions allowed';
+        return;
+      }
+      
+      // Get selected tags
+      const selectedTags = [];
+      document.querySelectorAll('.tag-option.selected').forEach(option => {
+        const tag = option.getAttribute('data-tag');
+        if (tag !== 'default') {
+          selectedTags.push(tag);
+        }
+      });
+      
+      const config = {
+        mcqCount,
+        mcqType,
+        freeCount,
+        passageCount,
+        reorderCount,
+        selectedTags: selectedTags.length > 0 ? selectedTags : null
+      };
+      
+      // Save as template if requested
+      if (document.getElementById('saveAsTemplate').checked) {
+        pendingQuizConfig = config;
+        closeCustomizeModal();
+        openTemplateNameModal();
+        return;
+      }
+      
+      // Save as default if requested
+      if (document.getElementById('saveAsDefault').checked) {
+        localStorage.setItem('defaultQuizConfig', JSON.stringify(config));
+      }
+      
+      closeCustomizeModal();
+      startQuizWithConfig(config);
+    }
+    
+    // Start quiz with configuration
+    async function startQuizWithConfig(config) {
+      quizConfig = config;
+      totalQuestions = config.mcqCount + config.freeCount + config.passageCount + config.reorderCount;
+
+      // Hide start screen, show loading screen
+      startScreen.style.display = 'none';
+      document.getElementById('loadingScreen').style.display = 'flex';
+      document.getElementById('customizeBtn').style.display = 'none';
+      document.getElementById('templateBtn').style.display = 'none';
+
+      try {
+        updateLoadingProgress(0);
+
+        // Filter words based on selected tags
+        if (config.selectedTags && config.selectedTags.length > 0) {
+          selectedWords = wordVault.filter(word => {
+            return config.selectedTags.includes(word.difficulty) ||
+                   (word.tags && word.tags.some(tag => config.selectedTags.includes(tag)));
+          });
+        } else {
+          selectedWords = [...wordVault];
+        }
+
+        if (selectedWords.length === 0) {
+          throw new Error('No words found with selected tags');
+        }
+
+        updateLoadingProgress(20);
+
+        // Load modules dynamically
+        await loadModules();
+        updateLoadingProgress(40);
+
+        // Generate questions based on config
+        await generateQuestions();
+        updateLoadingProgress(90);
+
+        // Show the first question
+        setTimeout(() => {
+          updateLoadingProgress(100);
+          // Hide loading screen, show quiz wrapper
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('quizWrapper').style.display = 'block';
+          showQuestion();
+        }, 500);
+      } catch (error) {
+        console.error('Error initializing quiz:', error);
+        questionContainer.innerHTML = `
+          <div style="color: black; padding: 20px; text-align: center;">
+            <h3>Error Loading Quiz</h3>
+            <p>${error.message}</p>
+            <button class="btn restart-btn" onclick="location.reload()">Back to Start</button>
+          </div>
+        `;
+      }
+    }
+    
+    // Load modules dynamically
+    async function loadModules() {
+      const moduleScripts = ['mcq.js', 'free.js', 'reorder.js', 'passage.js'];
+      const cacheBuster = Date.now();
+
+      for (const script of moduleScripts) {
+        await loadScript(script + '?v=' + cacheBuster);
+        updateLoadingProgress(30 + (moduleScripts.indexOf(script) + 1) * 5, `Loaded ${script}`);
+      }
+    }
+
+    // Helper function to load a script
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.body.appendChild(script);
+      });
+    }
+    
+    // Generate questions based on configuration
+    async function generateQuestions() {
+      questions = [];
+      const shuffled = shuffleArray(selectedWords);
+      let wordIndex = 0;
+      
+      // Generate MCQ questions
+      if (quizConfig.mcqCount > 0) {
+        updateLoadingProgress(50, "Generating MCQ questions...");
+        const mcqWords = shuffled.slice(wordIndex, wordIndex + quizConfig.mcqCount);
+        wordIndex += quizConfig.mcqCount;
+        
+        for (let i = 0; i < mcqWords.length; i++) {
+          const question = await generateSingleMCQ(mcqWords[i], quizConfig.mcqType);
+          if (question) questions.push(question);
+        }
+      }
+      
+      // Generate free response questions
+      if (quizConfig.freeCount > 0) {
+        updateLoadingProgress(60, "Generating free response questions...");
+        const freeWords = shuffled.slice(wordIndex, wordIndex + quizConfig.freeCount);
+        wordIndex += quizConfig.freeCount;
+        const freeQuestions = await generateFreeQuestions(freeWords);
+        questions = questions.concat(freeQuestions);
+      }
+      
+      // Generate reorder questions
+      if (quizConfig.reorderCount > 0) {
+        updateLoadingProgress(70, "Generating reorder questions...");
+        const reorderWords = shuffled.slice(wordIndex, wordIndex + quizConfig.reorderCount);
+        wordIndex += quizConfig.reorderCount;
+        const reorderQuestions = await generateReorderQuestions(reorderWords);
+        questions = questions.concat(reorderQuestions);
+      }
+      
+      // Generate passage questions
+      if (quizConfig.passageCount > 0) {
+        updateLoadingProgress(80, "Generating passage questions...");
+        const passageWords = shuffled.slice(wordIndex, wordIndex + quizConfig.passageCount);
+        const passageQuestions = await generatePassageQuestions(passageWords);
+        questions = questions.concat(passageQuestions);
+      }
+      
+      console.log(`Generated ${questions.length} questions`);
+    }
+    
+    // Helper to get translation from word (supports both 'translation' and 'telugu' fields)
+    function getWordTranslation(word) {
+      return word.translation || word.telugu || '';
+    }
+
+    // Helper to get language label
+    function getLanguageLabel() {
+      const lang = localStorage.getItem('appLanguage') || 'hindi';
+      const labels = {
+        hindi: 'Hindi',
+        telugu: 'Telugu',
+        tamil: 'Tamil'
+      };
+      return labels[lang] || 'Translation';
+    }
+
+    // Generate single MCQ based on type
+    async function generateSingleMCQ(word, mcqType) {
+      if (mcqType === 'english') {
+        return await generateEnglishMCQ(word);
+      } else if (mcqType === 'translation' || mcqType === 'telugu') {
+        return await generateTranslationMCQ(word);
+      } else {
+        // Both - randomly choose
+        return Math.random() < 0.5 ?
+          await generateEnglishMCQ(word) :
+          await generateTranslationMCQ(word);
+      }
+    }
+
+    // Generate English MCQ (Translation to English)
+    async function generateEnglishMCQ(word) {
+      const wordTranslation = getWordTranslation(word);
+      const otherWords = selectedWords.filter(w => w.english !== word.english);
+      const incorrectOptions = shuffleArray(otherWords)
+        .slice(0, 3)
+        .map(w => w.english);
+
+      const allOptions = shuffleArray([word.english, ...incorrectOptions]);
+
+      return {
+        type: 'mcq',
+        word: word.english,
+        translation: wordTranslation,
+        text: `What is the English translation of "${wordTranslation}"?`,
+        options: allOptions,
+        correctAnswer: word.english
+      };
+    }
+
+    // Generate Translation MCQ (English to Translation)
+    async function generateTranslationMCQ(word) {
+      const wordTranslation = getWordTranslation(word);
+      const langLabel = getLanguageLabel();
+      const otherWords = selectedWords.filter(w => getWordTranslation(w) !== wordTranslation);
+      const incorrectOptions = shuffleArray(otherWords)
+        .slice(0, 3)
+        .map(w => getWordTranslation(w));
+
+      const allOptions = shuffleArray([wordTranslation, ...incorrectOptions]);
+
+      return {
+        type: 'mcq',
+        word: word.english,
+        translation: wordTranslation,
+        text: `What is the ${langLabel} translation of "${word.english}"?`,
+        options: allOptions,
+        correctAnswer: wordTranslation
+      };
+    }
+    
+    // Show the current question
+    function showQuestion() {
+      if (currentQuestionIndex >= questions.length || questionsAnswered >= totalQuestions) {
+        showQuizComplete();
+        return;
+      }
+
+      const question = questions[currentQuestionIndex];
+      currentWord = question.word;
+
+      // Reset current word bar to original state
+      const currentWordBar = document.getElementById('currentWordBar');
+      currentWordBar.style.background = '#B9B6A1';
+
+      // Update current word display based on question type
+      const currentWordSpan = document.getElementById('currentWord');
+      if (question.type === 'mcq' && question.text.includes('English translation of')) {
+        currentWordBar.innerHTML = 'Current Word : <span id="currentWord">' + (question.translation || question.word) + '</span>';
+      } else {
+        currentWordBar.innerHTML = 'Current Word : <span id="currentWord">' + question.word + '</span>';
+      }
+
+      // Check if rating should be shown for this question type
+      canRateWord = (question.type === 'mcq' || question.type === 'free_response');
+
+      // Create question structure
+      const questionTemplate = `
+        <div class="question-header">
+          <div class="question-text">${question.text}</div>
+          <div class="question-number">${questionsAnswered + 1}/${totalQuestions}</div>
+        </div>
+        <div id="answerArea"></div>
+        <div class="buttons">
+          <button class="btn submit-btn" id="submitBtn" onclick="submitAnswer()">Submit</button>
+          <button class="btn next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+        </div>
+      `;
+
+      questionContainer.innerHTML = questionTemplate;
+
+      // Set up answer area based on question type
+      const answerArea = document.getElementById('answerArea');
+
+      if (question.type === 'mcq') {
+        setupMCQQuestion(question, answerArea);
+      } else if (question.type === 'free_response') {
+        setupFreeResponseQuestion(question, answerArea);
+      } else if (question.type === 'reorder') {
+        setupReorderQuestion(question, answerArea);
+      } else if (question.type === 'passage') {
+        setupPassageQuestion(question, answerArea);
+      }
+
+      updateProgress();
+    }
+    
+    // Submit answer
+    async function submitAnswer() {
+      const submitBtn = document.getElementById('submitBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const currentWordBar = document.getElementById('currentWordBar');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Checking...';
+
+      const question = questions[currentQuestionIndex];
+
+      // Check answer based on question type
+      if (question.type === 'mcq') {
+        await checkMCQAnswer(question);
+      } else if (question.type === 'free_response') {
+        await checkFreeResponseAnswer(question);
+      } else if (question.type === 'reorder') {
+        await checkReorderAnswer(question);
+      } else if (question.type === 'passage') {
+        await checkPassageAnswer(question);
+      }
+
+      // Track incorrect answers
+      if (!isAnswerCorrect) {
+        incorrectQuestions.push({
+          question: question,
+          index: currentQuestionIndex
+        });
+
+        // Automatically mark word as hard when answered incorrectly
+        markWordAsHard(currentWord);
+
+        // Save to flashlight for review
+        saveToFlashlight(question, getUserAnswer(question), false, question.correctAnswer);
+      } else if (question.type === 'free_response') {
+        // Also save correct free response answers to flashlight
+        saveToFlashlight(question, getUserAnswer(question), true, null);
+      }
+
+      // Show feedback in current word bar
+      if (isAnswerCorrect) {
+        currentWordBar.textContent = 'Correct!';
+        currentWordBar.style.background = '#98B482';
+      } else {
+        currentWordBar.textContent = 'Incorrect';
+        currentWordBar.style.background = '#C4A484';
+      }
+
+      // Hide submit, show next question button
+      submitBtn.style.display = 'none';
+      nextBtn.style.display = 'block';
+
+      // Show rating buttons for correct MCQ and free response answers
+      if (isAnswerCorrect && canRateWord) {
+        difficultyButtons.style.display = 'flex';
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+    }
+    
+    // Next question
+    function nextQuestion() {
+      questionsAnswered++;
+      currentQuestionIndex++;
+      selectedOption = null;
+      difficultyButtons.style.display = 'none';
+      
+      showQuestion();
+    }
+    
+    // Rate word difficulty
+    function rateWord(difficulty) {
+      const wordEntry = wordVault.find(w => w.english.toLowerCase() === currentWord.toLowerCase());
+
+      if (wordEntry) {
+        wordEntry.difficulty = difficulty;
+        localStorage.setItem('wordVault', JSON.stringify(wordVault));
+
+        // Hide rating buttons and auto-advance to next question
+        difficultyButtons.style.display = 'none';
+        nextQuestion();
+      }
+    }
+    
+    // Get user's answer based on question type
+    function getUserAnswer(question) {
+      if (question.type === 'mcq') {
+        return selectedOption || '';
+      } else if (question.type === 'free_response') {
+        const textarea = document.getElementById('freeResponseAnswer');
+        return textarea ? textarea.value.trim() : '';
+      } else if (question.type === 'reorder') {
+        const container = document.getElementById('reorderContainer');
+        if (container) {
+          const items = container.querySelectorAll('.reorder-item');
+          return Array.from(items).map(item => item.textContent).join(' ');
+        }
+        return '';
+      }
+      return '';
+    }
+
+    // Save question to flashlight for review
+    function saveToFlashlight(question, userAnswer, isCorrect, correctAnswer) {
+      let flashlightData = JSON.parse(localStorage.getItem('flashlightData') || '[]');
+
+      // Add new item
+      flashlightData.push({
+        question: question.text,
+        userAnswer: userAnswer,
+        correctAnswer: correctAnswer,
+        isCorrect: isCorrect,
+        word: question.word || '',
+        type: question.type,
+        notes: '',
+        timestamp: Date.now()
+      });
+
+      // Keep only last 100 items
+      if (flashlightData.length > 100) {
+        flashlightData = flashlightData.slice(-100);
+      }
+
+      localStorage.setItem('flashlightData', JSON.stringify(flashlightData));
+    }
+
+    // Mark word as hard (for incorrect answers)
+    function markWordAsHard(word) {
+      const wordEntry = wordVault.find(w => w.english.toLowerCase() === word.toLowerCase());
+      
+      if (wordEntry) {
+        wordEntry.difficulty = 'hard';
+        localStorage.setItem('wordVault', JSON.stringify(wordVault));
+        console.log(`Marked "${word}" as hard due to incorrect answer`);
+      }
+    }
+    
+    // Filter by tag
+    function filterByTag(tag) {
+      // This is a placeholder - you can implement filtering logic here
+      console.log(`Filtering by tag: ${tag}`);
+    }
+    
+    // Open create tag modal
+    function openCreateTagModal() {
+      document.getElementById('createTagModal').style.display = 'block';
+      document.getElementById('newTagName').value = '';
+    }
+    
+    // Close create tag modal
+    function closeCreateTagModal() {
+      document.getElementById('createTagModal').style.display = 'none';
+    }
+    
+    // Create new tag
+    function createNewTag() {
+      const tagName = document.getElementById('newTagName').value.trim();
+      
+      if (!tagName) {
+        alert('Please enter a tag name');
+        return;
+      }
+      
+      // Check if tag already exists
+      const tagExists = customTags.some(tag => {
+        const name = typeof tag === 'string' ? tag : tag.name;
+        return name === tagName;
+      });
+      
+      if (tagExists || ['easy', 'medium', 'hard'].includes(tagName.toLowerCase())) {
+        alert('This tag already exists');
+        return;
+      }
+      
+      // For now, use default aqua color in question.html
+      // The actual color selection is in wordVault.html
+      customTags.push({ name: tagName, color: 'aqua' });
+      localStorage.setItem('customTags', JSON.stringify(customTags));
+      updateTagsDisplay();
+      closeCreateTagModal();
+    }
+    
+    // Open delete tag modal
+    function openDeleteTagModal(tag) {
+      tagToDelete = tag;
+      document.getElementById('deleteTagName').textContent = tag;
+      document.getElementById('deleteTagModal').style.display = 'block';
+    }
+    
+    // Close delete tag modal
+    function closeDeleteTagModal() {
+      document.getElementById('deleteTagModal').style.display = 'none';
+      tagToDelete = null;
+    }
+    
+    // Delete tag
+    function deleteTag(deleteContents) {
+      if (!tagToDelete) return;
+      
+      // Remove tag from custom tags
+      customTags = customTags.filter(tag => {
+        const name = typeof tag === 'string' ? tag : tag.name;
+        return name !== tagToDelete;
+      });
+      localStorage.setItem('customTags', JSON.stringify(customTags));
+      
+      if (deleteContents) {
+        // Remove tag from all words
+        wordVault.forEach(word => {
+          if (word.tags) {
+            word.tags = word.tags.filter(tag => tag !== tagToDelete);
+          }
+        });
+        localStorage.setItem('wordVault', JSON.stringify(wordVault));
+      }
+      
+      updateTagsDisplay();
+      closeDeleteTagModal();
+    }
+    
+    // Update progress bar
+    function updateProgress() {
+      const percent = (questionsAnswered / totalQuestions) * 100;
+      const progressFill = document.getElementById('progress');
+      if (progressFill) {
+        progressFill.style.width = `${percent}%`;
+      }
+    }
+    
+    // Update loading progress
+    function updateLoadingProgress(percent, message) {
+      loadingProgress = percent;
+      const loadingBar = document.getElementById('loadingProgress');
+      if (loadingBar) {
+        loadingBar.style.width = `${percent}%`;
+      }
+    }
+    
+    // Show quiz complete
+    function showQuizComplete() {
+      const correctCount = questionsAnswered - incorrectQuestions.length;
+
+      // Hide current word bar and progress bar
+      document.getElementById('currentWordBar').style.display = 'none';
+      document.getElementById('progressBar').style.display = 'none';
+      difficultyButtons.style.display = 'none';
+
+      questionContainer.innerHTML = `
+        <div class="quiz-complete">
+          <h2>Quiz Complete!</h2>
+          <p>You answered ${correctCount} out of ${questionsAnswered} questions correctly.</p>
+          <button class="restart-btn" onclick="location.reload()">Start New Quiz</button>
+        </div>
+      `;
+
+      // Track for tutorial
+      if (window.tutorialGuide) {
+        window.tutorialGuide.trackQuizCompleted();
+      }
+    }
+    
+    // Utility function to shuffle array
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+    
+    // Load templates
+    function loadTemplates() {
+      const stored = localStorage.getItem('quizTemplates');
+      if (stored) {
+        savedTemplates = JSON.parse(stored);
+      }
+    }
+    
+    // Open templates modal
+    function openTemplatesModal() {
+      document.getElementById('templatesModal').style.display = 'block';
+      displayTemplates();
+    }
+    
+    // Close templates modal
+    function closeTemplatesModal() {
+      document.getElementById('templatesModal').style.display = 'none';
+      
+      // Track for tutorial - if we're on the template info step, show start quiz instruction
+      if (window.tutorialGuide && window.tutorialGuide.isActive && window.tutorialGuide.currentStep === 'templateInfo') {
+        window.tutorialGuide.checkpoints.templateInfoShown = true;
+        window.tutorialGuide.saveProgress();
+        setTimeout(() => {
+          window.tutorialGuide.showNextStep();
+        }, 300);
+      }
+    }
+    
+    // Display templates
+    function displayTemplates() {
+      const templatesList = document.getElementById('templatesList');
+      
+      if (savedTemplates.length === 0) {
+        templatesList.innerHTML = '<p style="text-align: center; color: #666;">No templates saved yet</p>';
+        return;
+      }
+      
+      templatesList.innerHTML = savedTemplates.map((template, index) => `
+        <div class="template-item" onclick="useTemplate(${index})">
+          <div>
+            <div class="template-name">${template.name}</div>
+            <div class="template-details">
+              MCQ: ${template.config.mcqCount} | Free: ${template.config.freeCount} | 
+              Passage: ${template.config.passageCount} | Reorder: ${template.config.reorderCount}
+            </div>
+          </div>
+          <button class="template-delete" onclick="event.stopPropagation(); deleteTemplate(${index})">Delete</button>
+        </div>
+      `).join('');
+    }
+    
+    // Use template
+    function useTemplate(index) {
+      const template = savedTemplates[index];
+      closeTemplatesModal();
+      startQuizWithConfig(template.config);
+    }
+    
+    // Delete template
+    function deleteTemplate(index) {
+      if (confirm('Delete this template?')) {
+        savedTemplates.splice(index, 1);
+        localStorage.setItem('quizTemplates', JSON.stringify(savedTemplates));
+        displayTemplates();
+      }
+    }
+    
+    // Open template name modal
+    function openTemplateNameModal() {
+      document.getElementById('templateNameModal').style.display = 'block';
+      document.getElementById('templateNameInput').value = '';
+      document.getElementById('templateNameInput').focus();
+    }
+    
+    // Close template name modal
+    function closeTemplateNameModal() {
+      document.getElementById('templateNameModal').style.display = 'none';
+      pendingQuizConfig = null;
+    }
+    
+    // Save template with name
+    function saveTemplateWithName() {
+      const name = document.getElementById('templateNameInput').value.trim();
+      
+      if (!name) {
+        alert('Please enter a template name');
+        return;
+      }
+      
+      if (!savedTemplates) {
+        savedTemplates = [];
+      }
+      
+      savedTemplates.push({
+        name: name,
+        config: pendingQuizConfig
+      });
+      
+      localStorage.setItem('quizTemplates', JSON.stringify(savedTemplates));
+      
+      // Track for tutorial
+      if (window.tutorialGuide) {
+        window.tutorialGuide.trackTemplateCreated();
+      }
+      
+      closeTemplateNameModal();
+      startQuizWithConfig(pendingQuizConfig);
+    }
+  </script>
+  <script src="onboarding-interactive.js"></script>
+</body>
+</html>

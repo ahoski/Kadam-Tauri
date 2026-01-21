@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The day I met Joe</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      background-color: #758B73;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90vw;
+      height: 90vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 40px;
+      background-color: white;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .cover, .thankyou {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover .logo, .thankyou .logo {
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      width: 5%;
+      cursor: pointer;
+    }
+
+    .book-page {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-page img {
+      width: 50%;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .text-box {
+      width: 40%;
+      font-size: 1.4rem;
+      line-height: 2;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .container {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .screen {
+        padding: 20px;
+      }
+      
+      .book-page {
+        flex-direction: column;
+        gap: 20px;
+        padding-top: 60px;
+      }
+      
+      .book-page img {
+        width: 90%;
+        max-height: 50vh;
+      }
+      
+      .text-box {
+        width: 90%;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        text-align: center;
+        padding-bottom: 80px;
+      }
+      
+      .cover .logo, .thankyou .logo {
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        right: 20px;
+      }
+      
+      .nav-button {
+        top: auto;
+        bottom: 20px;
+        position: fixed;
+      }
+      
+      .nav-button img {
+        height: 40px;
+      }
+      
+      #prevBtn {
+        left: 20px;
+      }
+      
+      #nextBtn {
+        right: 20px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h3 {
+        font-size: 1rem;
+      }
+      
+      #startbtn {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+      }
+      
+      .popup {
+        width: 80%;
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .book-page img {
+        width: 95%;
+        max-height: 40vh;
+      }
+      
+      .text-box {
+        width: 95%;
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+      
+      .nav-button img {
+        height: 35px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      h3 {
+        font-size: 0.9rem;
+      }
+    }
+
+    .word {
+      border-bottom: 1px dotted #333;
+      cursor: pointer;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background:#758B73;
+      color: #f4f1e3;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .popup button {
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      position: absolute;
+      top: 90%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 500;
+    }
+
+    .nav-button img {
+      height: 50px;
+    }
+
+    #prevBtn {
+      left: 10%;
+    }
+
+    #nextBtn {
+      right: 10%;
+    }
+
+    #startbtn {
+      background: #758B73;
+      border: none;
+      cursor: pointer;
+      color: #f4f1e3;
+      font-size: 1.4rem;
+      border-radius: 40%;
+      padding: 1%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div id="screen" class="screen cover active">
+    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <h1 style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;">The day I met Joe</h1>
+    <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;">A1-A2 Level</h3>
+    <button id="startbtn" onclick="startBook()">Open Book</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <div id="popup-text"></div>
+    <button onclick="closePopup()">✕</button>
+  </div>
+
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="left.png" alt="Previous"></button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="right.png" alt="Next"></button>
+</div>
+
+<script>
+const pages = [
+  { img: "joepage1.png", text: "Today I went to the store with my dad." },
+  { img: "joepage2.png", text: "Inside the store I saw a robot. It was hard not to look closely at him. Dad said, \"It’s not nice to stare.\"" },
+  { img: "joepage3.png", text: "The robot was shopping for food and we were too." },
+  { img: "joepage4.png", text: "Dad said, \"Why don’t you go say hi? I’m sure he’s nice.\"" },
+  { img: "joepage5.png", text: "Just then, the robot said, \"Hi! My name is Joe.\" I said, \"Hello, Joe. Are you a robot?\"" },
+  { img: "joepage6.png", text: "Joe smiled and said, \"No, it’s just that I can’t walk like you, so I ride in this wheelchair. I'm only part robot!" }
+];
+
+const dictionaries = {
+  hindi: {
+    store: "दुकान",
+    dad: "पापा",
+    robot: "रोबोट",
+    excited: "उत्साहित",
+    stare: "घूरना",
+    food: "खाना",
+    same: "वही",
+    shopping: "खरीदारी",
+    nice: "अच्छा",
+    part: "हिस्सा",
+    kinds: "प्रकार",
+    say: "कहना",
+    hi: "नमस्ते",
+    name: "नाम",
+    walk: "चलना",
+    ride: "सवारी",
+    wheelchair: "व्हीलचेयर",
+    only: "केवल"
+  },
+  telugu: {
+    store: "అంగడి",
+    dad: "నాన్న",
+    robot: "యంత్రం",
+    excited: "ఉత్సాహంగా",
+    stare: "పట్టుకుణడం",
+    food: "ఆహారం",
+    same: "ఒకే",
+    shopping: "కొనుగోలు",
+    nice: "మంచి",
+    part: "భాగం",
+    kinds: "రకాలు",
+    say: "చెప్పడం",
+    hi: "నమస్కారం",
+    name: "పేరు",
+    walk: "నడవడం",
+    ride: "ఎక్కడం",
+    wheelchair: "వీల్ చైర్",
+    only: "మాత్రమే"
+  },
+  tamil: {
+    store: "கடை",
+    dad: "அப்பா",
+    robot: "ரோபோ",
+    excited: "உற்சாகமாக",
+    stare: "உற்றுப்பார்",
+    food: "உணவு",
+    same: "அதே",
+    shopping: "ஷாப்பிங்",
+    nice: "நல்ல",
+    part: "பகுதி",
+    kinds: "வகைகள்",
+    say: "சொல்",
+    hi: "வணக்கம்",
+    name: "பெயர்",
+    walk: "நடை",
+    ride: "சவாரி",
+    wheelchair: "சக்கர நாற்காலி",
+    only: "மட்டுமே"
+  }
+};
+
+function getDictionary() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  return dictionaries[lang] || dictionaries.hindi;
+}
+
+function getNoTranslationText() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  const texts = {
+    hindi: "अनुवाद उपलब्ध नहीं",
+    telugu: "అనువాదం అందుబాటులో లేదు",
+    tamil: "மொழிபெயர்ப்பு கிடைக்கவில்லை"
+  };
+  return texts[lang] || texts.hindi;
+}
+
+function getAddWordsTranslation() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  const texts = {
+    hindi: "शब्द भंडार में जोड़ें",
+    telugu: "పద భాండాగారంలో జోడించు",
+    tamil: "சொல் பெட்டகத்தில் சேர்"
+  };
+  return texts[lang] || texts.hindi;
+}
+
+function getWordsAddedAlert() {
+  return "Words from The Day I Met Joe have been added to your Word Vault!";
+}
+
+const dictionary = getDictionary();
+
+let pageIndex = -1;
+
+function startBook() {
+  pageIndex = 0;
+  document.getElementById("prevBtn").style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+  renderPage();
+}
+
+function changePage(direction) {
+  pageIndex += direction;
+  if (pageIndex < 0) pageIndex = 0;
+  if (pageIndex > pages.length) pageIndex = pages.length;
+  renderPage();
+}
+
+function renderPage() {
+  const container = document.getElementById("screen");
+  if (pageIndex >= pages.length) {
+    container.className = "screen thankyou active";
+    container.innerHTML = `
+      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <h2 style="color: #758B73; font-weight: normal;">Do you like robots?</h2>
+<div style="display: flex; gap: 10px;">
+  <button onclick="submitPoll('yes')" style="
+    padding: 10px 10px;
+    border: none;
+    background-color: #758B73;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90px;
+    height: 40px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  ">Yes</button>
+  <button onclick="submitPoll('no')" style="
+    padding: 10px 10px;
+    border: none;
+    background-color: #758B73;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90px;
+    height: 40px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  ">No</button>
+</div>
+      <button onclick="addJoeWords()" style="margin-top: 40px; background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px;">Add to Word Vault</button>
+    `;
+    return;
+  }
+  const page = pages[pageIndex];
+  container.className = "screen book-page active";
+  container.innerHTML = `
+    <img src="${page.img}" alt="Page Image">
+    <div class="text-box">${highlightWords(page.text)}</div>
+  `;
+
+  container.querySelectorAll('.word').forEach(word => {
+    word.addEventListener('click', () => {
+      const key = word.dataset.word;
+      const translation = dictionary[key.toLowerCase()] || getNoTranslationText();
+      document.getElementById('popup-text').innerText = `${key} = ${translation}`;
+      document.getElementById('popup').style.display = 'block';
+    });
+  });
+}
+
+function highlightWords(text) {
+  return text.split(' ').map(word => {
+    const clean = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    if (dictionary[clean]) {
+      return `<span class=\"word\" data-word=\"${clean}\">${word}</span>`;
+    }
+    return word;
+  }).join(' ');
+}
+
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+
+function addJoeWords() {
+  const dict = getDictionary();
+  const words = Object.keys(dict);
+
+  const currentVault = JSON.parse(localStorage.getItem("wordVault") || "[]");
+  const updatedVault = [...currentVault];
+
+  words.forEach(word => {
+    if (!currentVault.some(w => w.english === word)) {
+      updatedVault.push({ english: word, translation: dict[word], notes: "", difficulty: "hard", tags: [] });
+    }
+  });
+
+  localStorage.setItem("wordVault", JSON.stringify(updatedVault));
+  alert(getWordsAddedAlert());
+}
+</script>
+</body>
+</html>

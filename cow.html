@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The birth of Jesus</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      background-color: #758B73;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90vw;
+      height: 90vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 40px;
+      background-color: white;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .cover, .thankyou {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover .logo, .thankyou .logo {
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      width: 5%;
+      cursor: pointer;
+    }
+
+    .book-page {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-page img {
+      width: 50%;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .text-box {
+      width: 40%;
+      font-size: 1.4rem;
+      line-height: 2;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .container {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .screen {
+        padding: 20px;
+      }
+      
+      .book-page {
+        flex-direction: column;
+        gap: 20px;
+        padding-top: 60px;
+      }
+      
+      .book-page img {
+        width: 90%;
+        max-height: 50vh;
+      }
+      
+      .text-box {
+        width: 90%;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        text-align: center;
+        padding-bottom: 80px;
+      }
+      
+      .cover .logo, .thankyou .logo {
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        right: 20px;
+      }
+      
+      .nav-button {
+        top: auto;
+        bottom: 20px;
+        position: fixed;
+      }
+      
+      .nav-button img {
+        height: 40px;
+      }
+      
+      #prevBtn {
+        left: 20px;
+      }
+      
+      #nextBtn {
+        right: 20px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h3 {
+        font-size: 1rem;
+      }
+      
+      #startbtn {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+      }
+      
+      .popup {
+        width: 80%;
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .book-page img {
+        width: 95%;
+        max-height: 40vh;
+      }
+      
+      .text-box {
+        width: 95%;
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+      
+      .nav-button img {
+        height: 35px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      h3 {
+        font-size: 0.9rem;
+      }
+    }
+
+    .word {
+      border-bottom: 1px dotted #333;
+      cursor: pointer;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background:#758B73;
+      color: #f4f1e3;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .popup button {
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      position: absolute;
+      top: 90%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 500;
+    }
+
+    .nav-button img {
+      height: 50px;
+    }
+
+    #prevBtn {
+      left: 10%;
+    }
+
+    #nextBtn {
+      right: 10%;
+    }
+
+    #startbtn {
+      background: #758B73;
+      border: none;
+      cursor: pointer;
+      color: #f4f1e3;
+      font-size: 1.4rem;
+      border-radius: 40%;
+      padding: 1%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div id="screen" class="screen cover active">
+    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <h1 style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;">The birth of Jesus</h1>
+    <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;">A1-A2 Level</h3>
+    <button id="startbtn" onclick="startBook()">Open Book</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <div id="popup-text"></div>
+    <button onclick="closePopup()">✕</button>
+  </div>
+
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;"><img src="left.png" alt="Previous"></button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;"><img src="right.png" alt="Next"></button>
+</div>
+
+<script>
+const pages = [
+  { img: "cowpage1.png", text: "Hannah is a cow. She lives in a shed in Bethlehem with many animals." },
+  { img: "cowpage2.png", text: "One cold night, someone knocked on the shed door." },
+  { img: "cowpage3.png", text: "A man and a woman stood outside. They looked tired and cold." },
+  { img: "cowpage4.png", text: "They asked, \"Can we come in?\" There was just enough space for them." },
+  { img: "cowpage5.png", text: "That night, all the animals slept quietly. It was very peaceful." },
+  { img: "cowpage6.png", text: "But later, there was a loud sound. A baby was born!" },
+  { img: "cowpage7.png", text: "People came to see the baby. Wise men came too." },
+  { img: "cowpage8.png", text: "They brought presents for the baby. Angels came from the sky." },
+  { img: "cowpage9.png", text: "Hannah and the animals looked at the baby. Jesus was born." }
+];
+
+const dictionaries = {
+  hindi: {
+    cow: "गाय",
+    lives: "रहती है",
+    shed: "गौशाला",
+    animals: "जानवर",
+    cold: "ठंडी",
+    night: "रात",
+    someone: "कोई",
+    knocked: "दस्तक दी",
+    door: "दरवाज़ा",
+    man: "आदमी",
+    woman: "औरत",
+    outside: "बाहर",
+    tired: "थके हुए",
+    space: "जगह",
+    slept: "सोए",
+    quietly: "चुपचाप",
+    later: "बाद में",
+    loud: "ज़ोर से",
+    sound: "आवाज़",
+    baby: "शिशु",
+    born: "जन्म हुआ",
+    people: "लोग",
+    see: "देखना",
+    wise_men: "बुद्धिमान लोग",
+    brought: "लाए",
+    presents: "उपहार",
+    angels: "देवदूत",
+    sky: "आसमान"
+  },
+  telugu: {
+    cow: "ఆవు",
+    lives: "జీవిస్తుంది",
+    shed: "కొట్టం",
+    animals: "జంతువులు",
+    cold: "చలిగా",
+    night: "రాత్రి",
+    someone: "ఎవరైనా",
+    knocked: "తట్టాడు",
+    door: "ద్వారం",
+    man: "పురుషుడు",
+    woman: "స్త్రీ",
+    outside: "బయట",
+    tired: "అలసిన",
+    space: "జగ",
+    slept: "నిద్రపోయారు",
+    quietly: "నిశ్శబ్దంగా",
+    later: "తరువాత",
+    loud: "గట్టిగా",
+    sound: "ధ్వని",
+    baby: "శిశువు",
+    born: "జన్మించాడు",
+    people: "ప్రజలు",
+    see: "చూడటం",
+    wise_men: "జ్ఞానులు",
+    brought: "తెచ్చారు",
+    presents: "బహుమతులు",
+    angels: "దూతలు",
+    sky: "ఆకాశం"
+  },
+  tamil: {
+    cow: "பசு",
+    lives: "வாழ்கிறது",
+    shed: "கொட்டகை",
+    animals: "விலங்குகள்",
+    cold: "குளிர்",
+    night: "இரவு",
+    someone: "யாரோ",
+    knocked: "தட்டினார்",
+    door: "கதவு",
+    man: "மனிதன்",
+    woman: "பெண்",
+    outside: "வெளியே",
+    tired: "களைப்பாக",
+    space: "இடம்",
+    slept: "தூங்கினார்கள்",
+    quietly: "அமைதியாக",
+    later: "பின்னர்",
+    loud: "சத்தமாக",
+    sound: "ஒலி",
+    baby: "குழந்தை",
+    born: "பிறந்தது",
+    people: "மக்கள்",
+    see: "பார்க்க",
+    wise_men: "ஞானிகள்",
+    brought: "கொண்டு வந்தனர்",
+    presents: "பரிசுகள்",
+    angels: "தேவதூதர்கள்",
+    sky: "வானம்"
+  }
+};
+
+function getDictionary() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  return dictionaries[lang] || dictionaries.hindi;
+}
+
+function getNoTranslationText() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  const texts = {
+    hindi: "अनुवाद उपलब्ध नहीं",
+    telugu: "అనువాదం అందుబాటులో లేదు",
+    tamil: "மொழிபெயர்ப்பு கிடைக்கவில்லை"
+  };
+  return texts[lang] || texts.hindi;
+}
+
+function getThankYouTranslation() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  const texts = {
+    hindi: "पढ़ने के लिए धन्यवाद!",
+    telugu: "చదివినందుకు ధన్యవాదాలు!",
+    tamil: "படித்ததற்கு நன்றி!"
+  };
+  return texts[lang] || texts.hindi;
+}
+
+function getAddWordsTranslation() {
+  const lang = localStorage.getItem('appLanguage') || 'hindi';
+  const texts = {
+    hindi: "शब्द भंडार में जोड़ें",
+    telugu: "పద భాండాగారంలో జోడించు",
+    tamil: "சொல் பெட்டகத்தில் சேர்"
+  };
+  return texts[lang] || texts.hindi;
+}
+
+function getWordsAddedAlert() {
+  return "Words from The Birth of Jesus have been added to your Word Vault!";
+}
+
+const dictionary = getDictionary();
+
+let pageIndex = -1;
+
+function startBook() {
+  pageIndex = 0;
+  document.getElementById("prevBtn").style.display = "block";
+  document.getElementById("nextBtn").style.display = "block";
+  renderPage();
+}
+
+function changePage(direction) {
+  pageIndex += direction;
+  if (pageIndex < 0) pageIndex = 0;
+  if (pageIndex > pages.length) pageIndex = pages.length;
+  renderPage();
+}
+
+function renderPage() {
+  const container = document.getElementById("screen");
+  if (pageIndex >= pages.length) {
+    container.className = "screen thankyou active";
+    container.innerHTML = `
+      <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+      <h1 style="color: #758B73; font-weight: normal; font-size: 3rem;">Thank you for reading!</h1>
+      <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">${getThankYouTranslation()}</h3>
+      <button onclick="addCowWords()" style="margin-top: 20px; background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px;">Add to Word Vault</button>
+    `;
+    return;
+  }
+  const page = pages[pageIndex];
+  container.className = "screen book-page active";
+  container.innerHTML = `
+    <img src="${page.img}" alt="Page Image">
+    <div class="text-box">${highlightWords(page.text)}</div>
+  `;
+
+  container.querySelectorAll('.word').forEach(word => {
+    word.addEventListener('click', () => {
+      const key = word.dataset.word;
+      const translation = dictionary[key.toLowerCase()] || getNoTranslationText();
+      document.getElementById('popup-text').innerText = `${key} = ${translation}`;
+      document.getElementById('popup').style.display = 'block';
+    });
+  });
+}
+
+function highlightWords(text) {
+  return text.split(' ').map(word => {
+    const clean = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    if (dictionary[clean]) {
+      return `<span class=\"word\" data-word=\"${clean}\">${word}</span>`;
+    }
+    return word;
+  }).join(' ');
+}
+
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+
+function addCowWords() {
+  const dict = getDictionary();
+  const words = Object.keys(dict);
+
+  const currentVault = JSON.parse(localStorage.getItem("wordVault") || "[]");
+  const updatedVault = [...currentVault];
+
+  words.forEach(word => {
+    if (!currentVault.some(w => w.english === word)) {
+      updatedVault.push({ english: word, translation: dict[word], notes: "", difficulty: "hard", tags: [] });
+    }
+  });
+
+  localStorage.setItem("wordVault", JSON.stringify(updatedVault));
+  alert(getWordsAddedAlert());
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quiz-wrapper {
+      background: #8CB7B7;
+      width: 100%;
+      max-width: 100%;
+      min-height: 100%;
+      padding: 40px;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 60px;
+    }
+
+    .logo {
+      position: fixed;
+      top: 35px;
+      left: 35px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .quiz-title {
+      font-size: 48px;
+      color: black;
+      font-weight: normal;
+      text-align: center;
+      width: 100%;
+    }
+
+    .current-word-bar {
+      background: #AED2D2;
+      padding: 15px 20px;
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: black;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: transparent;
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #4B8686;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      background: #AED2D2;
+      padding: 25px;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .question-text {
+      font-size: 20px;
+      color: black;
+      font-weight: normal;
+    }
+
+    .question-number {
+      font-size: 18px;
+      color: #555;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .option {
+      background: #CEE6E6;
+      padding: 25px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      color: black;
+      border: none;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+
+    .option:hover {
+      opacity: 0.8;
+    }
+
+    .option.selected {
+      outline: 3px solid #85867B;
+    }
+
+    .submit-btn {
+      background: #98B482;
+      color: black;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: normal;
+      font-size: 18px;
+      padding: 15px 50px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .quiz-wrapper {
+        padding: 20px;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        left: 20px;
+      }
+
+      .quiz-title {
+        font-size: 36px;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .question-text {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="logo.png" alt="Logo" class="logo" onclick="window.location.href='index.html'">
+
+  <div class="quiz-wrapper">
+    <div class="header">
+      <div class="quiz-title">Quiz</div>
+    </div>
+
+    <div class="current-word-bar">Current Word : Apple</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 100%;"></div>
+    </div>
+
+    <div class="question-box">
+      <div class="question-header">
+        <div class="question-text">What is the English translation of Apple?</div>
+        <div class="question-number">9/9</div>
+      </div>
+
+      <div class="options-grid">
+        <div class="option" onclick="selectOption(this)">Option 1</div>
+        <div class="option" onclick="selectOption(this)">Option 2</div>
+        <div class="option" onclick="selectOption(this)">Option 3</div>
+        <div class="option" onclick="selectOption(this)">Option 4</div>
+      </div>
+
+      <button class="submit-btn">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    function selectOption(el) {
+      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</body>
+</html>

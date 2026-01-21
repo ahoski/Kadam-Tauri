@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Usage Hints</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #2e7d32;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    
+    .word-display {
+      text-align: center;
+      font-size: 24px;
+      color: #3f51b5;
+      margin-bottom: 20px;
+    }
+    
+    .telugu {
+      font-size: 18px;
+      color: #666;
+    }
+    
+    .explanation {
+      background-color: #ffebee;
+      border-left: 4px solid #f44336;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    
+    .examples {
+      background-color: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 5px;
+    }
+    
+    .example-item {
+      margin: 10px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .example-item:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #4caf50;
+      font-weight: bold;
+    }
+    
+    .mcq-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e0e0e0;
+    }
+    
+    .question-text {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    
+    .options-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .option {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .option:hover {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+    }
+    
+    .option.selected {
+      background-color: #bbdefb;
+      border-color: #2196f3;
+      font-weight: bold;
+    }
+    
+    .option.correct {
+      background-color: #c8e6c9;
+      border-color: #4caf50;
+    }
+    
+    .option.wrong {
+      background-color: #ffcdd2;
+      border-color: #f44336;
+    }
+    
+    .feedback {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 5px;
+      font-weight: bold;
+      display: none;
+    }
+    
+    .feedback.correct {
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .feedback.incorrect {
+      background-color: #ffebee;
+      border: 1px solid #ffcdd2;
+      color: #c62828;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    
+    .submit-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+    
+    .submit-btn:hover {
+      background-color: #388e3c;
+    }
+    
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .exit-btn {
+      background-color: #2196f3;
+      color: white;
+      display: none;
+      margin-top: 20px;
+      width: 100%;
+    }
+    
+    .exit-btn:hover {
+      background-color: #1976d2;
+    }
+    
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+    }
+  </style>
+  <script src="tauri-api.js"></script>
+</head>
+<body>
+  <h1>Word Usage Hints</h1>
+  
+  <div class="container" id="mainContainer">
+    <div class="loading">Loading hints...</div>
+  </div>
+
+  <script>
+    // API keys
+    // API configuration moved to Workers endpoint
+    
+    // State
+    let currentWord = '';
+    let currentMCQ = null;
+    let selectedOption = null;
+    let attempts = 0;
+    let hintsData = null;
+    
+    // Initialize hints page
+    async function initHints() {
+      try {
+        // Get data from sessionStorage
+        hintsData = JSON.parse(sessionStorage.getItem('hintsData') || '{}');
+        
+        if (!hintsData.word) {
+          showError('No word data found');
+          return;
+        }
+        
+        currentWord = hintsData.word;
+        
+        // Generate hints content
+        await generateHintsContent(hintsData);
+        
+        // Generate MCQ
+        await generateMCQ();
+        
+      } catch (error) {
+        console.error('Error initializing hints:', error);
+        showError('Error loading hints');
+      }
+    }
+    
+    // Generate hints content
+    async function generateHintsContent(hintsData) {
+      const container = document.getElementById('mainContainer');
+      
+      let html = `
+        <div class="word-display">
+          ${hintsData.word}
+          ${hintsData.telugu ? `<div class="telugu">${hintsData.telugu}</div>` : ''}
+        </div>
+      `;
+      
+      // Add user's sentence
+      if (hintsData.userSentence) {
+        html += `
+          <div style="margin-bottom: 20px;">
+            <strong>Your sentence:</strong> "${hintsData.userSentence}"
+          </div>
+        `;
+      }
+      
+      // Add explanation
+      if (hintsData.explanation) {
+        html += `
+          <div class="explanation">
+            <strong>Why this is incorrect:</strong><br>
+            ${hintsData.explanation}
+          </div>
+        `;
+      } else {
+        // Generate explanation if not provided
+        html += `
+          <div class="explanation">
+            <strong>Hint:</strong><br>
+            Make sure to use the word "${hintsData.word}" correctly in a complete sentence.
+          </div>
+        `;
+      }
+      
+      // Add examples
+      if (hintsData.examples && hintsData.examples.length > 0) {
+        html += `
+          <div class="examples">
+            <strong>Correct usage examples:</strong>
+            ${hintsData.examples.map(ex => `<div class="example-item">${ex}</div>`).join('')}
+          </div>
+        `;
+      } else {
+        // Generate examples
+        const examples = await generateExamples(hintsData.word);
+        html += `
+          <div class="examples">
+            <strong>Correct usage examples:</strong>
+            ${examples.map(ex => `<div class="example-item">${ex}</div>`).join('')}
+          </div>
+        `;
+      }
+      
+      html += '<div class="mcq-section" id="mcqSection"></div>';
+      
+      container.innerHTML = html;
+    }
+    
+    // Generate examples using local AI
+    async function generateExamples(word) {
+      try {
+        const data = await TauriAPI.chatCompletion(
+          [{ role: "user", content: `Generate 4 simple example sentences using the word "${word}" correctly. Make them suitable for grade 3 students. Return only the sentences, one per line.` }],
+          'gemma-2b'
+        );
+
+        const content = data?.response || '';
+        return content.split('\n').filter(s => s.trim()).slice(0, 4);
+      } catch (error) {
+        console.error('Error generating examples:', error);
+        return [
+          `I like the ${word}.`,
+          `The ${word} is nice.`,
+          `We have a ${word}.`,
+          `This is a ${word}.`
+        ];
+      }
+    }
+    
+    // Generate MCQ question
+    async function generateMCQ() {
+      const mcqSection = document.getElementById('mcqSection');
+      mcqSection.innerHTML = '<div class="loading">Generating question...</div>';
+      
+      try {
+        // Generate one correct sentence and three incorrect ones
+        const mcqData = await generateSimpleMCQ();
+        
+        currentMCQ = mcqData;
+        displayMCQ();
+      } catch (error) {
+        console.error('Error generating MCQ:', error);
+        // Fallback MCQ
+        currentMCQ = generateFallbackMCQ();
+        displayMCQ();
+      }
+    }
+    
+    // Generate simple MCQ with one correct answer
+    async function generateSimpleMCQ() {
+      try {
+        const prompt = `Create 4 simple sentences for grade 3 students using the word "${currentWord}".
+        
+        Requirements:
+        - First sentence: Use the word "${currentWord}" CORRECTLY with proper meaning
+        - Other 3 sentences: Use the word "${currentWord}" CLEARLY INCORRECTLY (completely wrong meaning or nonsensical)
+        - Make all sentences 4-8 words long
+        - Use very simple vocabulary
+        - Make the wrong sentences obviously wrong (like using "happy" as a verb: "I happy the ball")
+        
+        Return EXACTLY in this format:
+        CORRECT: [correct sentence]
+        WRONG1: [clearly incorrect sentence]
+        WRONG2: [clearly incorrect sentence]  
+        WRONG3: [clearly incorrect sentence]`;
+        
+        const data = await TauriAPI.chatCompletion(
+          [{ role: "user", content: prompt }],
+          'gemma-2b'
+        );
+        const content = data?.response || '';
+        
+        // Parse response
+        const correctMatch = content.match(/CORRECT:\s*(.+)/);
+        const wrong1Match = content.match(/WRONG1:\s*(.+)/);
+        const wrong2Match = content.match(/WRONG2:\s*(.+)/);
+        const wrong3Match = content.match(/WRONG3:\s*(.+)/);
+        
+        if (!correctMatch || !wrong1Match || !wrong2Match || !wrong3Match) {
+          throw new Error('Failed to parse AI response');
+        }
+        
+        const correct = correctMatch[1].trim();
+        const wrongOptions = [
+          wrong1Match[1].trim(),
+          wrong2Match[1].trim(),
+          wrong3Match[1].trim()
+        ];
+        
+        // Shuffle all options
+        const allOptions = shuffleArray([correct, ...wrongOptions]);
+        
+        return {
+          options: allOptions,
+          correctAnswer: correct
+        };
+      } catch (error) {
+        console.error('Error generating MCQ:', error);
+        throw error;
+      }
+    }
+    
+    // Generate fallback MCQ
+    function generateFallbackMCQ() {
+      const templates = [
+        `I like the ${currentWord}.`,
+        `The ${currentWord} is beautiful.`,
+        `We saw a ${currentWord} yesterday.`,
+        `My ${currentWord} is new.`
+      ];
+      
+      const incorrect = [
+        `The ${currentWord} are walking.`,
+        `I ${currentWord} to school.`,
+        `The cat ${currentWord} loudly.`
+      ];
+      
+      const correct = templates[Math.floor(Math.random() * templates.length)];
+      const options = shuffleArray([correct, ...incorrect.slice(0, 3)]);
+      
+      return {
+        options: options,
+        correctAnswer: correct
+      };
+    }
+    
+    // Display MCQ
+    function displayMCQ() {
+      const mcqSection = document.getElementById('mcqSection');
+      
+      let html = `
+        <div class="question-text">
+          In which sentence is "${currentWord}" used correctly?
+        </div>
+        <div class="options-container">
+      `;
+      
+      currentMCQ.options.forEach((option, index) => {
+        html += `
+          <div class="option" data-option="${index}" onclick="selectOption(${index})">
+            ${option}
+          </div>
+        `;
+      });
+      
+      html += `
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <button class="btn submit-btn" id="submitBtn" onclick="checkAnswer()">Submit</button>
+        <button class="btn exit-btn" id="exitBtn" onclick="exitHints()">Return to Quiz</button>
+      `;
+      
+      mcqSection.innerHTML = html;
+    }
+    
+    // Select option
+    function selectOption(index) {
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      document.querySelector(`[data-option="${index}"]`).classList.add('selected');
+      selectedOption = index;
+    }
+    
+    // Check answer
+    async function checkAnswer() {
+      if (selectedOption === null) {
+        alert('Please select an answer');
+        return;
+      }
+      
+      attempts++;
+      const submitBtn = document.getElementById('submitBtn');
+      const feedback = document.getElementById('feedback');
+      const exitBtn = document.getElementById('exitBtn');
+      
+      submitBtn.disabled = true;
+      
+      const selectedText = currentMCQ.options[selectedOption];
+      const isCorrect = selectedText === currentMCQ.correctAnswer;
+      
+      if (isCorrect) {
+        feedback.textContent = '✓ Correct! Great job!';
+        feedback.className = 'feedback correct';
+        feedback.style.display = 'block';
+        
+        document.querySelector(`[data-option="${selectedOption}"]`).classList.add('correct');
+        
+        // Show exit button
+        exitBtn.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        // Send success message to parent
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'hintsComplete' }, '*');
+        } else {
+          // Fallback if not in iframe
+          sessionStorage.setItem('hintsCompleted', 'true');
+          window.location.href = 'question.html';
+        }
+      } else {
+        if (attempts >= 3) {
+          // Too many attempts - mark word as hard and exit
+          feedback.textContent = '✗ This word seems challenging. It has been marked as hard for more practice.';
+          feedback.className = 'feedback incorrect';
+          feedback.style.display = 'block';
+          
+          // Mark word as hard
+          markWordAsHard();
+          
+          // Send failure message to parent
+          setTimeout(() => {
+            if (window.parent !== window) {
+              window.parent.postMessage({ type: 'hintsFailed' }, '*');
+            } else {
+              // Fallback if not in iframe
+              sessionStorage.setItem('hintsFailed', 'true');
+              window.location.href = 'question.html';
+            }
+          }, 2000);
+        } else {
+          feedback.textContent = `✗ Incorrect. Try again! (Attempt ${attempts}/3)`;
+          feedback.className = 'feedback incorrect';
+          feedback.style.display = 'block';
+          
+          document.querySelector(`[data-option="${selectedOption}"]`).classList.add('wrong');
+          
+          // Generate new MCQ after delay
+          setTimeout(() => {
+            selectedOption = null;
+            generateMCQ();
+          }, 2000);
+        }
+      }
+    }
+    
+    // Mark word as hard
+    function markWordAsHard() {
+      try {
+        const wordVault = JSON.parse(localStorage.getItem('wordVault') || '[]');
+        const wordIndex = wordVault.findIndex(w => 
+          w.english.toLowerCase() === currentWord.toLowerCase()
+        );
+        
+        if (wordIndex !== -1) {
+          wordVault[wordIndex].difficulty = 'hard';
+          localStorage.setItem('wordVault', JSON.stringify(wordVault));
+        }
+        
+        // Set flag for question.html
+        sessionStorage.setItem('hintsFailed', 'true');
+      } catch (error) {
+        console.error('Error marking word as hard:', error);
+      }
+    }
+    
+    // Exit hints
+    function exitHints() {
+      if (window.parent !== window) {
+        // In iframe - send message to parent
+        window.parent.postMessage({ type: 'hintsComplete' }, '*');
+      } else {
+        // Not in iframe - navigate back
+        window.location.href = 'question.html';
+      }
+    }
+    
+    // Show error
+    function showError(message) {
+      document.getElementById('mainContainer').innerHTML = `
+        <div style="text-align: center; color: #f44336;">
+          <h2>Error</h2>
+          <p>${message}</p>
+          <button class="btn" onclick="window.close()">Close</button>
+        </div>
+      `;
+    }
+    
+    // Utility function
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+    
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', initHints);
+  </script>
+</body>
+</html>

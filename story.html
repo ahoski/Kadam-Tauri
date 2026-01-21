@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Reader</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      background-color: #758B73;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90vw;
+      height: 90vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 40px;
+      background-color: white;
+      border-radius: 8px;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .cover, .thankyou {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover .logo, .thankyou .logo {
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      width: 5%;
+      min-width: 40px;
+      cursor: pointer;
+    }
+
+    .book-page {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-page img {
+      width: 42%;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .text-box {
+      width: 52%;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      white-space: pre-line;
+      max-height: 75vh;
+      overflow-y: auto;
+      padding-bottom: 60px;
+    }
+
+    /* Clickable words */
+    .word {
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .word:hover {
+      background-color: #e8f5e9;
+    }
+
+    .word.selected {
+      background-color: #c8e6c9;
+      border-bottom: 2px solid #758B73;
+    }
+
+    .word.in-vault {
+      background-color: #fff3cd;
+      border-bottom: 2px dotted #c9a227;
+    }
+
+    /* Popup styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-overlay.active {
+      display: flex;
+    }
+
+    .popup {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 350px;
+      width: 90%;
+    }
+
+    .popup-word {
+      font-size: 1.8rem;
+      color: #758B73;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .speak-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      padding: 5px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .speak-btn:hover {
+      opacity: 1;
+    }
+
+    .popup-translation {
+      font-size: 1.4rem;
+      color: #333;
+      margin-bottom: 20px;
+      min-height: 40px;
+    }
+
+    .popup-loading {
+      color: #888;
+      font-style: italic;
+    }
+
+    .popup-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .popup-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .popup-btn.primary {
+      background: #758B73;
+      color: #f4f1e3;
+    }
+
+    .popup-btn.secondary {
+      background: #ddd;
+      color: #333;
+    }
+
+    .popup-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Navigation buttons */
+    .nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 500;
+    }
+
+    #prevBtn {
+      left: 10%;
+      top: 90%;
+    }
+
+    #nextBtn {
+      right: 10%;
+      top: 90%;
+    }
+
+    .nav-button img {
+      height: 50px;
+    }
+
+    #startbtn {
+      background: #758B73;
+      border: none;
+      cursor: pointer;
+      color: #f4f1e3;
+      font-size: 1.4rem;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-family: inherit;
+    }
+
+    #startbtn:hover {
+      background: #668066;
+    }
+
+    /* Words summary on thank you page */
+    .words-summary {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 80%;
+      max-width: 400px;
+    }
+
+    .words-summary h4 {
+      color: #758B73;
+      margin-bottom: 10px;
+    }
+
+    .word-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 10px;
+      background: #f5f5f5;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .screen {
+        padding: 20px;
+      }
+
+      .book-page {
+        flex-direction: column;
+        gap: 20px;
+        padding-top: 60px;
+      }
+
+      .book-page img {
+        width: 90%;
+        max-height: 50vh;
+      }
+
+      .text-box {
+        width: 90%;
+        font-size: 1rem;
+        line-height: 1.6;
+        text-align: center;
+        padding-bottom: 100px;
+        max-height: none;
+      }
+
+      .cover .logo, .thankyou .logo {
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        right: 20px;
+      }
+
+      .nav-button {
+        top: auto;
+        bottom: 20px;
+        position: fixed;
+      }
+
+      .nav-button img {
+        height: 40px;
+      }
+
+      #prevBtn {
+        left: 20px;
+      }
+
+      #nextBtn {
+        right: 20px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      h3 {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .book-page img {
+        width: 95%;
+        max-height: 40vh;
+      }
+
+      .text-box {
+        width: 95%;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+    }
+  </style>
+  <script src="tauri-api.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div id="screen" class="screen cover active">
+    <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+    <h1 id="storyTitle" style="color: #758B73; font-weight: normal; margin-bottom: 1.5%;"></h1>
+    <h3 id="storyLevel" style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0; margin-bottom: 2%;"></h3>
+    <button id="startbtn" onclick="startBook()">Open Book</button>
+    <p id="instructions" style="color: #666; font-size: 0.95rem; margin-top: 20px;"></p>
+  </div>
+
+  <button class="nav-button" id="prevBtn" onclick="changePage(-1)" style="display: none;">
+    <img src="left.png" alt="Previous">
+  </button>
+  <button class="nav-button" id="nextBtn" onclick="changePage(1)" style="display: none;">
+    <img src="right.png" alt="Next">
+  </button>
+</div>
+
+<!-- Translation Popup -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup">
+    <div class="popup-word">
+      <span id="popupWord"></span>
+      <button class="speak-btn" onclick="speakWord()" title="Listen">🔊</button>
+    </div>
+    <div class="popup-translation" id="popupTranslation">
+      <span class="popup-loading">Getting translation...</span>
+    </div>
+    <div class="popup-buttons">
+      <button class="popup-btn primary" id="addToVaultBtn" onclick="addCurrentWordToVault()" disabled>Add to Word Vault</button>
+      <button class="popup-btn secondary" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="stories.js"></script>
+<script>
+  // Get story ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const storyId = urlParams.get('id');
+
+  // Load story
+  const story = getStoryById(storyId);
+  if (!story) {
+    alert('Story not found!');
+    window.location.href = 'index.html';
+  }
+
+  // State
+  let pageIndex = -1;
+  let selectedWords = []; // Words user has added to vault this session
+  let currentWord = null;
+  let currentTranslation = null;
+  const MAX_WORDS = 20;
+
+  // Get existing words from vault
+  function getVaultWords() {
+    return JSON.parse(localStorage.getItem('wordVault') || '[]');
+  }
+
+  // Get user's language preference
+  function getLanguage() {
+    return localStorage.getItem('appLanguage') || 'telugu';
+  }
+
+  function getLanguageLabel() {
+    const labels = {
+      hindi: 'Hindi',
+      telugu: 'Telugu',
+      tamil: 'Tamil'
+    };
+    return labels[getLanguage()] || 'Telugu';
+  }
+
+  function getInstructionsText() {
+    const instructions = {
+      hindi: 'किसी भी शब्द पर टैप करें अनुवाद देखने और सहेजने के लिए!',
+      telugu: 'అనువాదం చూడటానికి మరియు సేవ్ చేయడానికి ఏదైనా పదంపై నొక్కండి!',
+      tamil: 'மொழிபெயர்ப்பைப் பார்க்கவும் சேமிக்கவும் எந்த வார்த்தையையும் தட்டவும்!'
+    };
+    return instructions[getLanguage()] || instructions.telugu;
+  }
+
+  // Initialize
+  document.getElementById('storyTitle').textContent = story.title;
+  document.getElementById('storyLevel').textContent = story.level + ' Level';
+  document.getElementById('instructions').textContent = getInstructionsText();
+  document.title = story.title;
+
+  function startBook() {
+    pageIndex = 0;
+    document.getElementById("prevBtn").style.display = "block";
+    document.getElementById("nextBtn").style.display = "block";
+    renderPage();
+  }
+
+  function changePage(direction) {
+    pageIndex += direction;
+    if (pageIndex < 0) pageIndex = 0;
+    if (pageIndex > story.pages.length) pageIndex = story.pages.length;
+    renderPage();
+  }
+
+  function renderPage() {
+    const container = document.getElementById("screen");
+
+    // Thank you / end page
+    if (pageIndex >= story.pages.length) {
+      container.className = "screen thankyou active";
+      document.getElementById("prevBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+
+      let wordsHtml = '';
+      if (selectedWords.length > 0) {
+        wordsHtml = `
+          <div class="words-summary">
+            ${selectedWords.map(w => `
+              <div class="word-item">
+                <span>${w.english}</span>
+                <span>${w.translation}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <img src="logo.png" class="logo" onclick="window.location.href='index.html'">
+        <h1 style="color: #758B73; font-weight: normal; font-size: 2.5rem;">Thank you for reading!</h1>
+        <h3 style="color: #758B73; font-weight: normal; font-style: italic; margin-top: 0;">
+          ${selectedWords.length > 0 ? `You saved ${selectedWords.length} word${selectedWords.length > 1 ? 's' : ''} to your Word Vault!` : 'Tap words next time to save them!'}
+        </h3>
+        ${wordsHtml}
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <button onclick="window.location.href='wordVault.html'" style="background: #758B73; color: #f4f1e3; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">Go to Word Vault</button>
+          <button onclick="window.location.href='index.html'" style="background: #ddd; color: #333; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 5px; cursor: pointer;">Back to Stories</button>
+        </div>
+      `;
+      return;
+    }
+
+    const page = story.pages[pageIndex];
+    container.className = "screen book-page active";
+
+    // Convert text to clickable words
+    const textWithClickableWords = makeWordsClickable(page.text);
+
+    container.innerHTML = `
+      <img src="${page.img}" alt="Page Image">
+      <div class="text-box">${textWithClickableWords}</div>
+    `;
+
+    // Add click handlers to words
+    container.querySelectorAll('.word').forEach(wordEl => {
+      wordEl.addEventListener('click', () => handleWordClick(wordEl));
+    });
+
+    // Mark already selected words
+    markSelectedWords();
+  }
+
+  function makeWordsClickable(text) {
+    // Process text while preserving HTML tags
+    // Split by HTML tags, process text parts, rejoin
+    const parts = text.split(/(<[^>]+>)/g);
+    return parts.map(part => {
+      // If it's an HTML tag, leave it alone
+      if (part.startsWith('<')) return part;
+      // Otherwise, wrap words in spans
+      return part.replace(/([a-zA-Z]+)/g, '<span class="word" data-word="$1">$1</span>');
+    }).join('');
+  }
+
+  function markSelectedWords() {
+    const vaultWords = getVaultWords();
+    document.querySelectorAll('.word').forEach(wordEl => {
+      const word = wordEl.dataset.word.toLowerCase();
+      // Check if added this session
+      if (selectedWords.some(w => w.english.toLowerCase() === word)) {
+        wordEl.classList.add('selected');
+      }
+      // Check if already in vault (but not added this session)
+      else if (vaultWords.some(w => w.english.toLowerCase() === word)) {
+        wordEl.classList.add('in-vault');
+      }
+    });
+  }
+
+  async function handleWordClick(wordEl) {
+    const word = wordEl.dataset.word;
+    currentWord = word;
+    currentTranslation = null;
+
+    // Show popup
+    document.getElementById('popupWord').textContent = word;
+    document.getElementById('popupTranslation').innerHTML = '<span class="popup-loading">Getting translation...</span>';
+    document.getElementById('popupOverlay').classList.add('active');
+
+    // Check if already in vault or selected this session
+    const vaultWords = getVaultWords();
+    const vaultEntry = vaultWords.find(w => w.english.toLowerCase() === word.toLowerCase());
+    const selectedEntry = selectedWords.find(w => w.english.toLowerCase() === word.toLowerCase());
+    const addBtn = document.getElementById('addToVaultBtn');
+
+    if (selectedEntry || vaultEntry) {
+      addBtn.textContent = 'Already in Vault';
+      addBtn.disabled = true;
+
+      // Use existing translation from vault
+      const existingTranslation = (selectedEntry || vaultEntry).translation;
+      currentTranslation = existingTranslation;
+      document.getElementById('popupTranslation').textContent = existingTranslation;
+    } else {
+      if (selectedWords.length >= MAX_WORDS) {
+        addBtn.textContent = 'Limit Reached (20)';
+        addBtn.disabled = true;
+      } else {
+        addBtn.textContent = 'Add to Word Vault';
+        addBtn.disabled = true; // Will enable after translation loads
+      }
+
+      // Get translation from AI
+      try {
+        const translation = await getTranslation(word);
+        currentTranslation = translation;
+        document.getElementById('popupTranslation').textContent = translation;
+
+        if (selectedWords.length < MAX_WORDS) {
+          addBtn.disabled = false;
+        }
+      } catch (error) {
+        document.getElementById('popupTranslation').textContent = 'Could not get translation';
+        console.error('Translation error:', error);
+      }
+    }
+  }
+
+  async function getTranslation(word) {
+    const language = getLanguage(); // hindi, telugu, or tamil
+
+    // Check if translator is ready
+    const status = await TauriAPI.checkTranslationModelStatus(language);
+
+    if (!status.installed) {
+      // Fallback to simple dictionary or prompt user
+      throw new Error('Translator not downloaded. Please download it from Settings.');
+    }
+
+    try {
+      // Use Opus-MT via Transformers.js
+      const translation = await TauriAPI.translate(word, language);
+      // Take only the first word in case it returns multiple
+      return translation.trim().split(/\s+/)[0];
+    } catch (e) {
+      console.error('Translation error:', e);
+      throw e;
+    }
+  }
+
+  function addCurrentWordToVault() {
+    if (!currentWord || !currentTranslation) return;
+    if (selectedWords.length >= MAX_WORDS) return;
+
+    const wordLower = currentWord.toLowerCase();
+    if (selectedWords.some(w => w.english.toLowerCase() === wordLower)) return;
+
+    // Add to local selection
+    const wordEntry = {
+      english: currentWord.toLowerCase(),
+      translation: currentTranslation,
+      notes: "",
+      difficulty: "hard",
+      tags: []
+    };
+    selectedWords.push(wordEntry);
+
+    // Add to localStorage wordVault
+    const vault = JSON.parse(localStorage.getItem('wordVault') || '[]');
+    if (!vault.some(w => w.english.toLowerCase() === wordLower)) {
+      vault.push(wordEntry);
+      localStorage.setItem('wordVault', JSON.stringify(vault));
+    }
+
+    // Update UI
+    markSelectedWords();
+
+    // Update button
+    document.getElementById('addToVaultBtn').textContent = 'Saved!';
+    document.getElementById('addToVaultBtn').disabled = true;
+
+    // Close popup after short delay
+    setTimeout(() => {
+      closePopup();
+    }, 800);
+  }
+
+  function closePopup() {
+    document.getElementById('popupOverlay').classList.remove('active');
+    currentWord = null;
+    currentTranslation = null;
+  }
+
+  function speakWord() {
+    if (currentWord && 'speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(currentWord);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
+    }
+  }
+
+  // Close popup on overlay click
+  document.getElementById('popupOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'popupOverlay') {
+      closePopup();
+    }
+  });
+</script>
+</body>
+</html>
