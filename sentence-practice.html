@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sentence Practice</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #98B482;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .logo {
+      position: fixed;
+      top: 35px;
+      left: 35px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Main Container */
+    .practice-wrapper {
+      background: #D2CFB9;
+      width: 100%;
+      max-width: 1000px;
+      min-height: 90vh;
+      padding: 40px;
+      position: relative;
+    }
+
+    .practice-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .practice-title {
+      font-size: 36px;
+      color: black;
+      font-weight: normal;
+      margin-bottom: 10px;
+    }
+
+    .practice-subtitle {
+      font-size: 16px;
+      color: #666;
+    }
+
+    /* Mode Selector */
+    .mode-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .mode-btn {
+      padding: 12px 30px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      background: #B9B6A1;
+      color: black;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn.active {
+      background: #98B482;
+    }
+
+    .mode-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(0,0,0,0.1);
+      margin-bottom: 5px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #6C815C;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #666;
+      text-align: right;
+    }
+
+    /* Practice Content Area */
+    .practice-content {
+      background: #B9B6A1;
+      padding: 25px;
+      min-height: 400px;
+    }
+
+    /* Sentence Building Mode */
+    .build-section {
+      display: none;
+    }
+
+    .build-section.active {
+      display: block;
+    }
+
+    .build-instruction {
+      font-size: 18px;
+      color: black;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 20px;
+      background: #D2CFB9;
+      min-height: 80px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .word-chip {
+      background: #E8E6D8;
+      padding: 10px 18px;
+      cursor: grab;
+      user-select: none;
+      font-size: 16px;
+      color: black;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .word-chip:hover {
+      background: #DDD9C9;
+      border-color: #85867B;
+    }
+
+    .word-chip.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .word-chip.placed {
+      background: #98B482;
+      color: white;
+    }
+
+    .sentence-zone {
+      border: 3px dashed #85867B;
+      min-height: 80px;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: rgba(255,255,255,0.3);
+      margin-bottom: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .sentence-zone.dragover {
+      border-color: #6C815C;
+      background: rgba(152, 180, 130, 0.3);
+    }
+
+    .sentence-zone .placeholder {
+      color: #999;
+      font-style: italic;
+    }
+
+    .sentence-zone .word-chip {
+      animation: popIn 0.2s ease;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Target Word Display */
+    .target-word-section {
+      background: #D2CFB9;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .target-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .target-word {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4A6741;
+    }
+
+    .target-translation {
+      font-size: 16px;
+      color: #666;
+      margin-left: auto;
+    }
+
+    /* Guided Creation Mode */
+    .guided-section {
+      display: none;
+    }
+
+    .guided-section.active {
+      display: block;
+    }
+
+    .prompt-section {
+      background: #D2CFB9;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .prompt-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .sentence-starter {
+      font-size: 20px;
+      color: black;
+    }
+
+    .sentence-starter .blank {
+      display: inline-block;
+      min-width: 100px;
+      border-bottom: 2px dashed #85867B;
+      margin: 0 5px;
+    }
+
+    /* Word Bank for Guided Mode */
+    .guided-word-bank {
+      background: #D2CFB9;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .word-bank-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .word-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-option {
+      background: #E8E6D8;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .word-option:hover {
+      background: #DDD9C9;
+    }
+
+    .word-option.selected {
+      background: #98B482;
+      color: white;
+    }
+
+    /* Grammar Hint */
+    .grammar-hint {
+      background: #E8E6D8;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #6C815C;
+    }
+
+    .grammar-hint-title {
+      font-size: 14px;
+      color: #6C815C;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .grammar-hint-text {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* User Input Area */
+    .user-sentence-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      font-family: Georgia, 'Times New Roman', serif;
+      border: 2px solid #85867B;
+      background: #E8E6D8;
+      margin-bottom: 20px;
+      min-height: 60px;
+      resize: none;
+    }
+
+    .user-sentence-input:focus {
+      outline: none;
+      border-color: #6C815C;
+    }
+
+    /* AI Feedback Section */
+    .ai-feedback {
+      display: none;
+      background: #E8E6D8;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .ai-feedback.show {
+      display: block;
+    }
+
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .feedback-icon {
+      font-size: 24px;
+    }
+
+    .feedback-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .feedback-correct .feedback-title { color: #4A6741; }
+    .feedback-needs-work .feedback-title { color: #8B7355; }
+
+    .feedback-text {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .corrected-sentence {
+      background: #D2CFB9;
+      padding: 12px 15px;
+      font-size: 16px;
+      color: black;
+    }
+
+    .corrected-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    /* Buttons */
+    .buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .btn {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      padding: 12px 40px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn {
+      background: #98B482;
+      color: black;
+    }
+
+    .reset-btn {
+      background: #D2CFB9;
+      color: black;
+    }
+
+    .next-btn {
+      background: #98B482;
+      color: black;
+      display: none;
+    }
+
+    .hint-btn {
+      background: #D5C779;
+      color: black;
+    }
+
+    /* Result Section */
+    .result-section {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .result-section.show {
+      display: block;
+    }
+
+    .result-emoji {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .result-text {
+      font-size: 24px;
+      color: black;
+      margin-bottom: 10px;
+    }
+
+    .result-detail {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    /* Completion Screen */
+    .completion-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .completion-screen.show {
+      display: block;
+    }
+
+    .completion-title {
+      font-size: 32px;
+      color: black;
+      margin-bottom: 20px;
+    }
+
+    .completion-stats {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        left: 20px;
+      }
+
+      .practice-wrapper {
+        padding: 20px;
+      }
+
+      .practice-title {
+        font-size: 28px;
+      }
+
+      .mode-selector {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mode-btn {
+        width: 100%;
+      }
+
+      .word-chip {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <script src="tauri-api.js"></script>
+  <script src="stories.js"></script>
+</head>
+<body>
+  <img src="logo.png" alt="Logo" class="logo" onclick="goToHome()">
+
+  <div class="practice-wrapper">
+    <div class="practice-header">
+      <div class="practice-title" id="practiceTitle">Sentence Practice</div>
+      <div class="practice-subtitle" id="practiceSubtitle">Build sentences using words you've learned</div>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" id="buildModeBtn" onclick="switchMode('build')">
+        <span id="buildModeLabel">Sentence Building</span>
+      </button>
+      <button class="mode-btn" id="guidedModeBtn" onclick="switchMode('guided')">
+        <span id="guidedModeLabel">Guided Creation</span>
+      </button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 / 0</div>
+    </div>
+
+    <!-- Practice Content -->
+    <div class="practice-content" id="practiceContent">
+      <!-- Sentence Building Mode -->
+      <div class="build-section active" id="buildSection">
+        <div class="target-word-section">
+          <span class="target-label" id="targetLabel">Target word:</span>
+          <span class="target-word" id="targetWord">-</span>
+          <span class="target-translation" id="targetTranslation">-</span>
+        </div>
+
+        <div class="build-instruction" id="buildInstruction">
+          Arrange the words to form a correct sentence
+        </div>
+
+        <div class="word-bank" id="wordBank">
+          <!-- Word chips will be added here -->
+        </div>
+
+        <div class="sentence-zone" id="sentenceZone">
+          <span class="placeholder" id="sentencePlaceholder">Drag or click words here to build your sentence...</span>
+        </div>
+
+        <div class="result-section" id="buildResult">
+          <div class="result-emoji" id="buildResultEmoji"></div>
+          <div class="result-text" id="buildResultText"></div>
+          <div class="result-detail" id="buildResultDetail"></div>
+        </div>
+
+        <div class="buttons" id="buildButtons">
+          <button class="btn reset-btn" id="resetBtn" onclick="resetBuild()">Reset</button>
+          <button class="btn submit-btn" id="submitBuildBtn" onclick="checkBuildAnswer()">Check Answer</button>
+          <button class="btn next-btn" id="nextBuildBtn" onclick="nextBuildQuestion()">Next</button>
+        </div>
+      </div>
+
+      <!-- Guided Creation Mode -->
+      <div class="guided-section" id="guidedSection">
+        <div class="target-word-section">
+          <span class="target-label" id="guidedTargetLabel">Use this word:</span>
+          <span class="target-word" id="guidedTargetWord">-</span>
+          <span class="target-translation" id="guidedTargetTranslation">-</span>
+        </div>
+
+        <div class="prompt-section">
+          <div class="prompt-label" id="promptLabel">Complete the sentence:</div>
+          <div class="sentence-starter" id="sentenceStarter">
+            <!-- Sentence starter will be added here -->
+          </div>
+        </div>
+
+        <div class="grammar-hint" id="grammarHint">
+          <div class="grammar-hint-title" id="grammarHintTitle">Grammar Tip</div>
+          <div class="grammar-hint-text" id="grammarHintText">
+            <!-- Grammar hint will be added here -->
+          </div>
+        </div>
+
+        <div class="guided-word-bank">
+          <div class="word-bank-title" id="wordBankTitle">Word Bank (optional helpers):</div>
+          <div class="word-options" id="wordOptions">
+            <!-- Helper words will be added here -->
+          </div>
+        </div>
+
+        <textarea class="user-sentence-input" id="userSentenceInput" placeholder="Type your complete sentence here..."></textarea>
+
+        <div class="ai-feedback" id="aiFeedback">
+          <div class="feedback-header">
+            <span class="feedback-icon" id="feedbackIcon"></span>
+            <span class="feedback-title" id="feedbackTitle"></span>
+          </div>
+          <div class="feedback-text" id="feedbackText"></div>
+          <div class="corrected-sentence" id="correctedSection" style="display: none;">
+            <div class="corrected-label" id="correctedLabel">Suggested sentence:</div>
+            <div id="correctedSentence"></div>
+          </div>
+        </div>
+
+        <div class="buttons" id="guidedButtons">
+          <button class="btn hint-btn" id="hintBtn" onclick="showGrammarHint()">Show Hint</button>
+          <button class="btn submit-btn" id="submitGuidedBtn" onclick="checkGuidedAnswer()">Check Sentence</button>
+          <button class="btn next-btn" id="nextGuidedBtn" onclick="nextGuidedQuestion()">Next</button>
+        </div>
+      </div>
+
+      <!-- Completion Screen -->
+      <div class="completion-screen" id="completionScreen">
+        <div class="completion-title" id="completionTitle">Practice Complete!</div>
+        <div class="completion-stats" id="completionStats"></div>
+        <div class="buttons">
+          <button class="btn submit-btn" onclick="restartPractice()">Practice Again</button>
+          <button class="btn reset-btn" onclick="goToHome()">Back to Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Localization
+    const translations = {
+      hindi: {
+        title: 'वाक्य अभ्यास',
+        subtitle: 'सीखे हुए शब्दों से वाक्य बनाएं',
+        buildMode: 'वाक्य निर्माण',
+        guidedMode: 'निर्देशित रचना',
+        targetLabel: 'लक्ष्य शब्द:',
+        instruction: 'सही वाक्य बनाने के लिए शब्दों को व्यवस्थित करें',
+        placeholder: 'वाक्य बनाने के लिए शब्दों को यहां खींचें या क्लिक करें...',
+        reset: 'रीसेट',
+        check: 'उत्तर जांचें',
+        next: 'अगला',
+        correct: 'सही!',
+        incorrect: 'गलत',
+        tryAgain: 'फिर से कोशिश करें',
+        useWord: 'इस शब्द का उपयोग करें:',
+        complete: 'वाक्य पूरा करें:',
+        grammarTip: 'व्याकरण सुझाव',
+        wordBank: 'शब्द बैंक (वैकल्पिक सहायक):',
+        typeHere: 'अपना पूरा वाक्य यहां टाइप करें...',
+        showHint: 'संकेत दिखाएं',
+        checkSentence: 'वाक्य जांचें',
+        practiceComplete: 'अभ्यास पूर्ण!',
+        practiceAgain: 'फिर से अभ्यास करें',
+        backHome: 'होम पर वापस',
+        suggestedSentence: 'सुझाया गया वाक्य:',
+        greatJob: 'बहुत अच्छा!',
+        needsWork: 'सुधार की जरूरत है'
+      },
+      telugu: {
+        title: 'వాక్య సాధన',
+        subtitle: 'మీరు నేర్చుకున్న పదాలతో వాక్యాలు నిర్మించండి',
+        buildMode: 'వాక్య నిర్మాణం',
+        guidedMode: 'మార్గదర్శక సృష్టి',
+        targetLabel: 'లక్ష్య పదం:',
+        instruction: 'సరైన వాక్యాన్ని రూపొందించడానికి పదాలను అమర్చండి',
+        placeholder: 'వాక్యాన్ని నిర్మించడానికి పదాలను ఇక్కడ లాగండి లేదా క్లిక్ చేయండి...',
+        reset: 'రీసెట్',
+        check: 'సమాధానం తనిఖీ',
+        next: 'తదుపరి',
+        correct: 'సరైనది!',
+        incorrect: 'తప్పు',
+        tryAgain: 'మళ్ళీ ప్రయత్నించండి',
+        useWord: 'ఈ పదాన్ని ఉపయోగించండి:',
+        complete: 'వాక్యాన్ని పూర్తి చేయండి:',
+        grammarTip: 'వ్యాకరణ చిట్కా',
+        wordBank: 'పద బ్యాంక్ (ఐచ్ఛిక సహాయకులు):',
+        typeHere: 'మీ పూర్తి వాక్యాన్ని ఇక్కడ టైప్ చేయండి...',
+        showHint: 'సూచన చూపించు',
+        checkSentence: 'వాక్యం తనిఖీ',
+        practiceComplete: 'సాధన పూర్తయింది!',
+        practiceAgain: 'మళ్ళీ సాధన చేయండి',
+        backHome: 'హోమ్‌కు తిరిగి',
+        suggestedSentence: 'సూచించిన వాక్యం:',
+        greatJob: 'చాలా బాగా!',
+        needsWork: 'మెరుగుపరచాలి'
+      },
+      tamil: {
+        title: 'வாக்கிய பயிற்சி',
+        subtitle: 'நீங்கள் கற்றுக்கொண்ட வார்த்தைகளைப் பயன்படுத்தி வாக்கியங்களை உருவாக்குங்கள்',
+        buildMode: 'வாக்கிய உருவாக்கம்',
+        guidedMode: 'வழிகாட்டப்பட்ட உருவாக்கம்',
+        targetLabel: 'இலக்கு வார்த்தை:',
+        instruction: 'சரியான வாக்கியத்தை உருவாக்க வார்த்தைகளை வரிசைப்படுத்துங்கள்',
+        placeholder: 'வாக்கியத்தை உருவாக்க வார்த்தைகளை இங்கே இழுக்கவும் அல்லது கிளிக் செய்யவும்...',
+        reset: 'மீட்டமை',
+        check: 'பதிலை சரிபார்க்கவும்',
+        next: 'அடுத்து',
+        correct: 'சரி!',
+        incorrect: 'தவறு',
+        tryAgain: 'மீண்டும் முயற்சிக்கவும்',
+        useWord: 'இந்த வார்த்தையைப் பயன்படுத்துங்கள்:',
+        complete: 'வாக்கியத்தை முடிக்கவும்:',
+        grammarTip: 'இலக்கண உதவிக்குறிப்பு',
+        wordBank: 'வார்த்தை வங்கி (விருப்பமான உதவியாளர்கள்):',
+        typeHere: 'உங்கள் முழு வாக்கியத்தை இங்கே தட்டச்சு செய்யுங்கள்...',
+        showHint: 'குறிப்பைக் காட்டு',
+        checkSentence: 'வாக்கியத்தைச் சரிபார்க்கவும்',
+        practiceComplete: 'பயிற்சி முடிந்தது!',
+        practiceAgain: 'மீண்டும் பயிற்சி செய்யுங்கள்',
+        backHome: 'முகப்புக்குத் திரும்பு',
+        suggestedSentence: 'பரிந்துரைக்கப்பட்ட வாக்கியம்:',
+        greatJob: 'மிகவும் நன்று!',
+        needsWork: 'மேம்படுத்த வேண்டும்'
+      }
+    };
+
+    // Grammar patterns and hints
+    const grammarHints = {
+      verb: {
+        en: 'Verbs show action. Use the correct form based on the subject.',
+        hi: 'क्रियाएं कार्य दिखाती हैं। विषय के आधार पर सही रूप का उपयोग करें।',
+        te: 'క్రియలు చర్యను చూపుతాయి. విషయం ఆధారంగా సరైన రూపాన్ని ఉపయోగించండి.',
+        ta: 'வினைச்சொற்கள் செயலைக் காட்டுகின்றன. பொருளின் அடிப்படையில் சரியான வடிவத்தைப் பயன்படுத்துங்கள்.'
+      },
+      noun: {
+        en: 'Nouns are naming words. They can be people, places, things, or ideas.',
+        hi: 'संज्ञाएं नाम शब्द हैं। वे लोग, स्थान, वस्तुएं या विचार हो सकते हैं।',
+        te: 'నామవాచకాలు పేరు పదాలు. అవి వ్యక్తులు, స్థలాలు, వస్తువులు లేదా ఆలోచనలు కావచ్చు.',
+        ta: 'பெயர்ச்சொற்கள் பெயரிடும் வார்த்தைகள். அவை மக்கள், இடங்கள், பொருட்கள் அல்லது எண்ணங்களாக இருக்கலாம்.'
+      },
+      adjective: {
+        en: 'Adjectives describe nouns. They tell us more about people, places, or things.',
+        hi: 'विशेषण संज्ञाओं का वर्णन करते हैं। वे हमें लोगों, स्थानों या वस्तुओं के बारे में अधिक बताते हैं।',
+        te: 'విశేషణాలు నామవాచకాలను వివరిస్తాయి. అవి వ్యక్తులు, స్థలాలు లేదా వస్తువుల గురించి మరింత చెప్పుతాయి.',
+        ta: 'பெயரடைகள் பெயர்ச்சொற்களை விவரிக்கின்றன. அவை மக்கள், இடங்கள் அல்லது பொருட்களைப் பற்றி மேலும் சொல்கின்றன.'
+      },
+      default: {
+        en: 'Make sure your sentence has a subject (who/what) and a verb (action).',
+        hi: 'सुनिश्चित करें कि आपके वाक्य में एक विषय (कौन/क्या) और एक क्रिया (कार्य) है।',
+        te: 'మీ వాక్యంలో విషయం (ఎవరు/ఏమిటి) మరియు క్రియ (చర్య) ఉందని నిర్ధారించుకోండి.',
+        ta: 'உங்கள் வாக்கியத்தில் ஒரு பொருள் (யார்/என்ன) மற்றும் ஒரு வினை (செயல்) இருப்பதை உறுதிப்படுத்துங்கள்.'
+      }
+    };
+
+    // Sentence starters for guided creation
+    const sentenceStarters = [
+      { starter: 'I like to ___ because ___', hint: 'verb' },
+      { starter: 'The ___ is very ___', hint: 'noun' },
+      { starter: 'Every day, I ___', hint: 'verb' },
+      { starter: 'My favorite ___ is ___', hint: 'noun' },
+      { starter: 'Yesterday, I ___', hint: 'verb' },
+      { starter: 'The ___ looks ___', hint: 'adjective' },
+      { starter: 'I want to ___ today', hint: 'verb' },
+      { starter: 'We can see the ___', hint: 'noun' },
+      { starter: 'She has a ___ ___', hint: 'adjective' },
+      { starter: 'They will ___ tomorrow', hint: 'verb' }
+    ];
+
+    // State variables
+    let currentMode = 'build';
+    let wordVault = [];
+    let practiceWords = [];
+    let currentIndex = 0;
+    let correctCount = 0;
+    let currentQuestion = null;
+    let currentLang = localStorage.getItem('appLanguage') || 'hindi';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWordVault();
+      applyTranslations();
+      initPractice();
+    });
+
+    function goToHome() {
+      window.location.href = 'index.html';
+    }
+
+    function loadWordVault() {
+      try {
+        const stored = localStorage.getItem('wordVault');
+        if (stored) {
+          wordVault = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error('Error loading word vault:', e);
+        wordVault = [];
+      }
+    }
+
+    function applyTranslations() {
+      const t = translations[currentLang] || translations.hindi;
+
+      document.getElementById('practiceTitle').textContent = t.title;
+      document.getElementById('practiceSubtitle').textContent = t.subtitle;
+      document.getElementById('buildModeLabel').textContent = t.buildMode;
+      document.getElementById('guidedModeLabel').textContent = t.guidedMode;
+      document.getElementById('targetLabel').textContent = t.targetLabel;
+      document.getElementById('buildInstruction').textContent = t.instruction;
+      document.getElementById('sentencePlaceholder').textContent = t.placeholder;
+      document.getElementById('resetBtn').textContent = t.reset;
+      document.getElementById('submitBuildBtn').textContent = t.check;
+      document.getElementById('nextBuildBtn').textContent = t.next;
+      document.getElementById('guidedTargetLabel').textContent = t.useWord;
+      document.getElementById('promptLabel').textContent = t.complete;
+      document.getElementById('grammarHintTitle').textContent = t.grammarTip;
+      document.getElementById('wordBankTitle').textContent = t.wordBank;
+      document.getElementById('userSentenceInput').placeholder = t.typeHere;
+      document.getElementById('hintBtn').textContent = t.showHint;
+      document.getElementById('submitGuidedBtn').textContent = t.checkSentence;
+      document.getElementById('nextGuidedBtn').textContent = t.next;
+      document.getElementById('completionTitle').textContent = t.practiceComplete;
+      document.getElementById('correctedLabel').textContent = t.suggestedSentence;
+    }
+
+    function initPractice() {
+      if (wordVault.length === 0) {
+        document.getElementById('practiceContent').innerHTML = `
+          <div style="text-align: center; padding: 40px;">
+            <p style="font-size: 18px; color: #666; margin-bottom: 20px;">
+              ${currentLang === 'hindi' ? 'आपके वर्ड वॉल्ट में कोई शब्द नहीं है।' :
+                currentLang === 'telugu' ? 'మీ వర్డ్ వాల్ట్‌లో పదాలు లేవు.' :
+                currentLang === 'tamil' ? 'உங்கள் வார்த்தை களஞ்சியத்தில் வார்த்தைகள் இல்லை.' :
+                'No words in your Word Vault.'}
+            </p>
+            <button class="btn submit-btn" onclick="location.href='index.html'">
+              ${currentLang === 'hindi' ? 'कहानियां पढ़ें' :
+                currentLang === 'telugu' ? 'కథలు చదవండి' :
+                currentLang === 'tamil' ? 'கதைகளைப் படியுங்கள்' :
+                'Read Stories'}
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Select random words for practice
+      practiceWords = shuffleArray([...wordVault]).slice(0, 5);
+      currentIndex = 0;
+      correctCount = 0;
+
+      updateProgress();
+      loadCurrentQuestion();
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+
+      document.getElementById('buildModeBtn').classList.toggle('active', mode === 'build');
+      document.getElementById('guidedModeBtn').classList.toggle('active', mode === 'guided');
+      document.getElementById('buildSection').classList.toggle('active', mode === 'build');
+      document.getElementById('guidedSection').classList.toggle('active', mode === 'guided');
+
+      loadCurrentQuestion();
+    }
+
+    function updateProgress() {
+      const percent = (currentIndex / practiceWords.length) * 100;
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressText').textContent = `${currentIndex} / ${practiceWords.length}`;
+    }
+
+    function loadCurrentQuestion() {
+      if (currentIndex >= practiceWords.length) {
+        showCompletion();
+        return;
+      }
+
+      const word = practiceWords[currentIndex];
+
+      if (currentMode === 'build') {
+        loadBuildQuestion(word);
+      } else {
+        loadGuidedQuestion(word);
+      }
+    }
+
+    // ==================== SENTENCE BUILDING ====================
+
+    async function loadBuildQuestion(word) {
+      // Reset UI
+      document.getElementById('buildResult').classList.remove('show');
+      document.getElementById('buildResult').style.display = 'none';
+      document.getElementById('submitBuildBtn').style.display = 'block';
+      document.getElementById('nextBuildBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'block';
+
+      // Show target word
+      document.getElementById('targetWord').textContent = word.english;
+      document.getElementById('targetTranslation').textContent = word.translation || '';
+
+      // Generate or get sentence
+      const sentence = await generateSentenceForWord(word.english);
+      const words = sentence.split(' ');
+      const shuffledWords = shuffleArray([...words]);
+
+      currentQuestion = {
+        word: word.english,
+        correctSentence: sentence,
+        correctOrder: words
+      };
+
+      // Create word bank
+      const wordBank = document.getElementById('wordBank');
+      wordBank.innerHTML = '';
+
+      shuffledWords.forEach((w, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'word-chip';
+        chip.textContent = w;
+        chip.dataset.word = w;
+        chip.dataset.index = index;
+        chip.draggable = true;
+
+        // Drag events
+        chip.addEventListener('dragstart', handleDragStart);
+        chip.addEventListener('dragend', handleDragEnd);
+
+        // Click event
+        chip.addEventListener('click', () => handleChipClick(chip));
+
+        wordBank.appendChild(chip);
+      });
+
+      // Set up sentence zone
+      const sentenceZone = document.getElementById('sentenceZone');
+      sentenceZone.innerHTML = '<span class="placeholder" id="sentencePlaceholder">' +
+        (translations[currentLang]?.placeholder || 'Drag or click words here to build your sentence...') + '</span>';
+
+      // Drag zone events
+      sentenceZone.addEventListener('dragover', handleDragOver);
+      sentenceZone.addEventListener('dragleave', handleDragLeave);
+      sentenceZone.addEventListener('drop', handleDrop);
+    }
+
+    async function generateSentenceForWord(word) {
+      // Try to find example from stories first
+      const exampleSentence = findExampleFromStories(word);
+      if (exampleSentence) {
+        return exampleSentence;
+      }
+
+      // Use templates as fallback
+      const templates = [
+        `I see a ${word}`,
+        `The ${word} is good`,
+        `I like the ${word}`,
+        `My ${word} is nice`,
+        `The ${word} is big`,
+        `I have a ${word}`
+      ];
+
+      return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    function findExampleFromStories(word) {
+      if (typeof stories === 'undefined') return null;
+
+      for (const story of stories) {
+        for (const page of story.pages) {
+          const sentences = page.text.split(/(?<=[.!?])\s+/);
+          for (const sentence of sentences) {
+            const cleanSentence = sentence.replace(/<[^>]+>/g, '').trim();
+            const words = cleanSentence.split(/\s+/);
+
+            // Find short sentences (4-7 words) containing the word
+            if (words.length >= 4 && words.length <= 7 &&
+                cleanSentence.toLowerCase().includes(word.toLowerCase())) {
+              // Remove ending punctuation
+              return cleanSentence.replace(/[.!?]$/, '');
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    // Drag and Drop handlers
+    let draggedChip = null;
+
+    function handleDragStart(e) {
+      draggedChip = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      draggedChip = null;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      this.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+
+      if (draggedChip) {
+        moveChipToZone(draggedChip, this);
+      }
+    }
+
+    function handleChipClick(chip) {
+      const wordBank = document.getElementById('wordBank');
+      const sentenceZone = document.getElementById('sentenceZone');
+
+      if (chip.parentElement === wordBank) {
+        moveChipToZone(chip, sentenceZone);
+      } else {
+        moveChipToZone(chip, wordBank);
+      }
+    }
+
+    function moveChipToZone(chip, targetZone) {
+      const sentenceZone = document.getElementById('sentenceZone');
+      const placeholder = document.getElementById('sentencePlaceholder');
+
+      if (targetZone === sentenceZone) {
+        if (placeholder) placeholder.remove();
+        chip.classList.add('placed');
+      } else {
+        chip.classList.remove('placed');
+        // Check if sentence zone is empty
+        if (sentenceZone.querySelectorAll('.word-chip').length === 1 &&
+            sentenceZone.contains(chip)) {
+          sentenceZone.innerHTML = '<span class="placeholder" id="sentencePlaceholder">' +
+            (translations[currentLang]?.placeholder || 'Drag or click words here...') + '</span>';
+        }
+      }
+
+      targetZone.appendChild(chip);
+    }
+
+    function resetBuild() {
+      const wordBank = document.getElementById('wordBank');
+      const sentenceZone = document.getElementById('sentenceZone');
+
+      // Move all chips back to word bank
+      const chips = sentenceZone.querySelectorAll('.word-chip');
+      chips.forEach(chip => {
+        chip.classList.remove('placed');
+        wordBank.appendChild(chip);
+      });
+
+      // Reset placeholder
+      sentenceZone.innerHTML = '<span class="placeholder" id="sentencePlaceholder">' +
+        (translations[currentLang]?.placeholder || 'Drag or click words here...') + '</span>';
+    }
+
+    function checkBuildAnswer() {
+      const sentenceZone = document.getElementById('sentenceZone');
+      const chips = sentenceZone.querySelectorAll('.word-chip');
+
+      if (chips.length === 0) return;
+
+      const userSentence = Array.from(chips).map(c => c.textContent).join(' ');
+      const isCorrect = userSentence === currentQuestion.correctSentence;
+
+      // Show result
+      const resultSection = document.getElementById('buildResult');
+      const resultEmoji = document.getElementById('buildResultEmoji');
+      const resultText = document.getElementById('buildResultText');
+      const resultDetail = document.getElementById('buildResultDetail');
+      const t = translations[currentLang] || translations.hindi;
+
+      if (isCorrect) {
+        correctCount++;
+        resultEmoji.textContent = '✓';
+        resultText.textContent = t.correct;
+        resultDetail.textContent = userSentence;
+        resultSection.style.background = '#98B482';
+
+        // Record success
+        recordPracticeResult(currentQuestion.word, true);
+      } else {
+        resultEmoji.textContent = '✗';
+        resultText.textContent = t.incorrect;
+        resultDetail.textContent = `${t.tryAgain}: ${currentQuestion.correctSentence}`;
+        resultSection.style.background = '#C4A484';
+
+        // Record failure
+        recordPracticeResult(currentQuestion.word, false);
+      }
+
+      resultSection.style.display = 'block';
+      resultSection.classList.add('show');
+
+      // Update buttons
+      document.getElementById('submitBuildBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('nextBuildBtn').style.display = 'block';
+    }
+
+    function nextBuildQuestion() {
+      currentIndex++;
+      updateProgress();
+      loadCurrentQuestion();
+    }
+
+    // ==================== GUIDED CREATION ====================
+
+    function loadGuidedQuestion(word) {
+      // Reset UI
+      document.getElementById('aiFeedback').classList.remove('show');
+      document.getElementById('aiFeedback').style.display = 'none';
+      document.getElementById('submitGuidedBtn').style.display = 'block';
+      document.getElementById('nextGuidedBtn').style.display = 'none';
+      document.getElementById('hintBtn').style.display = 'block';
+      document.getElementById('grammarHint').style.display = 'none';
+      document.getElementById('userSentenceInput').value = '';
+      document.getElementById('correctedSection').style.display = 'none';
+
+      // Show target word
+      document.getElementById('guidedTargetWord').textContent = word.english;
+      document.getElementById('guidedTargetTranslation').textContent = word.translation || '';
+
+      // Select random sentence starter
+      const starter = sentenceStarters[Math.floor(Math.random() * sentenceStarters.length)];
+      document.getElementById('sentenceStarter').innerHTML = starter.starter.replace(/_+/g,
+        '<span class="blank"></span>');
+
+      // Set grammar hint (hidden by default)
+      const hintKey = starter.hint || 'default';
+      const hint = grammarHints[hintKey] || grammarHints.default;
+      const langKey = currentLang === 'hindi' ? 'hi' : currentLang === 'telugu' ? 'te' :
+                      currentLang === 'tamil' ? 'ta' : 'en';
+      document.getElementById('grammarHintText').textContent = hint[langKey] || hint.en;
+
+      // Generate helper words
+      const wordOptions = document.getElementById('wordOptions');
+      wordOptions.innerHTML = '';
+
+      const helpers = generateHelperWords(word.english);
+      helpers.forEach(h => {
+        const option = document.createElement('div');
+        option.className = 'word-option';
+        option.textContent = h;
+        option.addEventListener('click', () => {
+          option.classList.toggle('selected');
+          insertWordToInput(h);
+        });
+        wordOptions.appendChild(option);
+      });
+
+      currentQuestion = {
+        word: word.english,
+        starter: starter.starter
+      };
+    }
+
+    function generateHelperWords(targetWord) {
+      // Generate related helper words
+      const commonWords = ['the', 'is', 'are', 'was', 'very', 'my', 'a', 'an', 'it', 'we', 'they'];
+      const helpers = [targetWord, ...commonWords.slice(0, 5)];
+      return shuffleArray(helpers);
+    }
+
+    function insertWordToInput(word) {
+      const input = document.getElementById('userSentenceInput');
+      const cursorPos = input.selectionStart;
+      const text = input.value;
+
+      const before = text.substring(0, cursorPos);
+      const after = text.substring(cursorPos);
+
+      input.value = before + (before && !before.endsWith(' ') ? ' ' : '') + word + ' ' + after;
+      input.focus();
+    }
+
+    function showGrammarHint() {
+      document.getElementById('grammarHint').style.display = 'block';
+      document.getElementById('hintBtn').style.display = 'none';
+    }
+
+    async function checkGuidedAnswer() {
+      const userSentence = document.getElementById('userSentenceInput').value.trim();
+
+      if (!userSentence) return;
+
+      // Check if target word is used
+      const targetWord = currentQuestion.word.toLowerCase();
+      const usedWord = userSentence.toLowerCase().includes(targetWord);
+
+      // Basic grammar check
+      const hasSubject = /^(I|We|You|He|She|It|They|The|A|An|My|Our|Your|His|Her|Their)\s/i.test(userSentence);
+      const hasVerb = /\b(is|are|am|was|were|have|has|had|do|does|did|will|can|could|would|should|like|want|need|see|go|come|make|take|give|get|know|think|feel|look|find|use|say|tell|ask|work|play|run|read|write|eat|drink|sleep|walk|talk|help|try|start|begin|learn)\b/i.test(userSentence);
+      const properLength = userSentence.split(/\s+/).length >= 4;
+
+      const isGood = usedWord && hasSubject && hasVerb && properLength;
+
+      // Show feedback
+      const feedbackSection = document.getElementById('aiFeedback');
+      const feedbackIcon = document.getElementById('feedbackIcon');
+      const feedbackTitle = document.getElementById('feedbackTitle');
+      const feedbackText = document.getElementById('feedbackText');
+      const t = translations[currentLang] || translations.hindi;
+
+      feedbackSection.classList.remove('feedback-correct', 'feedback-needs-work');
+
+      if (isGood) {
+        correctCount++;
+        feedbackSection.classList.add('feedback-correct');
+        feedbackIcon.textContent = '✓';
+        feedbackTitle.textContent = t.greatJob;
+        feedbackText.textContent = generatePositiveFeedback();
+
+        recordPracticeResult(currentQuestion.word, true);
+      } else {
+        feedbackSection.classList.add('feedback-needs-work');
+        feedbackIcon.textContent = '!';
+        feedbackTitle.textContent = t.needsWork;
+
+        let feedback = [];
+        if (!usedWord) feedback.push(`Use the word "${currentQuestion.word}"`);
+        if (!hasSubject) feedback.push('Start with a subject (I, We, The, etc.)');
+        if (!hasVerb) feedback.push('Include an action word (verb)');
+        if (!properLength) feedback.push('Make your sentence a bit longer');
+
+        feedbackText.textContent = feedback.join('. ') + '.';
+
+        // Show suggested correction
+        document.getElementById('correctedSection').style.display = 'block';
+        document.getElementById('correctedSentence').textContent =
+          `I ${currentQuestion.word.toLowerCase().endsWith('e') ? currentQuestion.word : 'use the ' + currentQuestion.word} every day.`;
+
+        recordPracticeResult(currentQuestion.word, false);
+      }
+
+      feedbackSection.style.display = 'block';
+      feedbackSection.classList.add('show');
+
+      // Update buttons
+      document.getElementById('submitGuidedBtn').style.display = 'none';
+      document.getElementById('hintBtn').style.display = 'none';
+      document.getElementById('nextGuidedBtn').style.display = 'block';
+    }
+
+    function generatePositiveFeedback() {
+      const feedbacks = [
+        'Great sentence structure!',
+        'Well done! Your sentence is clear and correct.',
+        'Excellent use of the word!',
+        'Your sentence flows naturally.',
+        'Good job! Keep practicing.'
+      ];
+      return feedbacks[Math.floor(Math.random() * feedbacks.length)];
+    }
+
+    function nextGuidedQuestion() {
+      currentIndex++;
+      updateProgress();
+      loadCurrentQuestion();
+    }
+
+    // ==================== COMPLETION & UTILITIES ====================
+
+    function showCompletion() {
+      document.getElementById('buildSection').classList.remove('active');
+      document.getElementById('guidedSection').classList.remove('active');
+      document.getElementById('completionScreen').classList.add('show');
+
+      const t = translations[currentLang] || translations.hindi;
+      const stats = `${correctCount} / ${practiceWords.length}`;
+      document.getElementById('completionStats').textContent = stats;
+
+      // Save practice stats
+      savePracticeStats();
+    }
+
+    function restartPractice() {
+      document.getElementById('completionScreen').classList.remove('show');
+      document.getElementById('buildSection').classList.add('active');
+
+      initPractice();
+    }
+
+    function recordPracticeResult(word, correct) {
+      // Update word vault with practice results
+      const wordEntry = wordVault.find(w => w.english.toLowerCase() === word.toLowerCase());
+      if (wordEntry) {
+        if (!wordEntry.sentencePractice) {
+          wordEntry.sentencePractice = { attempts: 0, correct: 0 };
+        }
+        wordEntry.sentencePractice.attempts++;
+        if (correct) {
+          wordEntry.sentencePractice.correct++;
+        }
+        localStorage.setItem('wordVault', JSON.stringify(wordVault));
+      }
+
+      // Track in error analysis
+      trackForErrorAnalysis(word, currentMode, correct);
+    }
+
+    function trackForErrorAnalysis(word, mode, correct) {
+      let errorData = JSON.parse(localStorage.getItem('sentenceErrorData') || '[]');
+
+      errorData.push({
+        word: word,
+        mode: mode,
+        correct: correct,
+        timestamp: Date.now()
+      });
+
+      // Keep last 100 entries
+      if (errorData.length > 100) {
+        errorData = errorData.slice(-100);
+      }
+
+      localStorage.setItem('sentenceErrorData', JSON.stringify(errorData));
+    }
+
+    function savePracticeStats() {
+      let stats = JSON.parse(localStorage.getItem('practiceStats') || '{}');
+
+      if (!stats.sentencePractice) {
+        stats.sentencePractice = {
+          totalSessions: 0,
+          totalQuestions: 0,
+          correctAnswers: 0
+        };
+      }
+
+      stats.sentencePractice.totalSessions++;
+      stats.sentencePractice.totalQuestions += practiceWords.length;
+      stats.sentencePractice.correctAnswers += correctCount;
+
+      localStorage.setItem('practiceStats', JSON.stringify(stats));
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+  </script>
+</body>
+</html>
