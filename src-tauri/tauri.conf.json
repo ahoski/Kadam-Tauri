@@ -1,63 +1,41 @@
 {
   "build": {
-    "beforeBuildCommand": "",
-    "beforeDevCommand": "",
-    "devPath": "../src",
     "distDir": "../src",
+    "devPath": "../src",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "G3",
+    "productName": "Kadam",
     "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": false,
+      "shell": {
+        "open": true
+      }
     },
     "bundle": {
       "active": true,
-      "category": "Education",
-      "copyright": "G3 Language Learning",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
+      "targets": "all",
+      "identifier": "com.kadam.g3",
       "icon": [
-        "icons/icon.icns",
-        "icons/icon.png"
-      ],
-      "identifier": "com.g3.languagelearning",
-      "longDescription": "G3 Language Learning App - Learn languages through comics and quizzes",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "G3 Language Learning",
-      "targets": ["dmg", "app"],
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
+        "icons/icon.png",
+        "icons/icon.icns"
+      ]
     },
     "security": {
       "csp": null
     },
-    "updater": {
-      "active": false
-    },
     "windows": [
       {
-        "fullscreen": false,
+        "title": "Kadam",
+        "width": 1200,
         "height": 800,
         "resizable": true,
-        "title": "G3",
-        "width": 1200,
-        "center": true
+        "fullscreen": false
       }
     ]
   }

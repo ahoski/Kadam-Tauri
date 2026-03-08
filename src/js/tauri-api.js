@@ -1,5 +1,5 @@
-// Tauri API Helper - Handles offline AI inference via Gemma 2B
-// Uses Google's Gemma 2 2B Instruct model for AI features and translation
+// Tauri API Helper - Handles offline AI inference via Qwen3 1.7B
+// Uses Qwen3-1.7B (Q5_K_M) for AI features and translation
 
 const TauriAPI = {
   isInitialized: false,
@@ -31,11 +31,11 @@ const TauriAPI = {
     try {
       const status = await this.checkModelStatus();
       if (!status.installed) {
-        console.log('Gemma 2B model not found. User needs to download it.');
+        console.log('Qwen3 1.7B model not found. User needs to download it.');
         return false;
       }
       await window.__TAURI__.invoke('init_model');
-      console.log('Gemma 2B loaded successfully');
+      console.log('Qwen3 1.7B loaded successfully');
       this.modelReady = true;
       return true;
     } catch (e) {
@@ -57,7 +57,7 @@ const TauriAPI = {
     }
   },
 
-  // Download Gemma 2B model with progress callback
+  // Download Qwen3 1.7B model with progress callback
   downloadModel: async function(onProgress) {
     if (window.__TAURI__ === undefined) {
       throw new Error('Model download only available in Tauri app');
@@ -117,30 +117,22 @@ const TauriAPI = {
     }
   },
 
-  // Translate using Gemma 2B (prompt-based)
+  // Translate using Qwen3 1.7B
   translate: async function(text, targetLanguage) {
     const langName = this.languageNames[targetLanguage] || targetLanguage;
 
-    const prompt = `Translate the following English text to ${langName}. Only provide the translation, nothing else.
-
-English: ${text}
-${langName}:`;
+    const prompt = `Translate the following English text to ${langName}. Only output the translation, nothing else.\n\n${text}`;
 
     try {
-      const response = await this.chatCompletion(
-        [{ role: 'user', content: prompt }],
-        'gemma-2b'
-      );
+      const response = await this.generateText(prompt, 256);
 
       // Clean up the response - take first line, trim whitespace
-      let translation = (response?.response || text).trim();
-      // Remove any "Translation:" prefix if present
-      translation = translation.replace(/^(Translation|अनुवाद|అనువాదం|மொழிபெயர்ப்பு):\s*/i, '');
-      // Take first word/phrase only for single word translations
-      if (text.split(/\s+/).length === 1) {
-        translation = translation.split(/\s+/)[0] || translation;
-      }
-      return translation;
+      let translation = (response || text).trim();
+      // Remove any prefix labels
+      translation = translation.replace(/^(Translation|अनुवाद|అనువాదం|மொழிபெயர்ப்பு|###\s*Response:?):\s*/i, '');
+      // Take first line only
+      translation = translation.split('\n')[0].trim();
+      return translation || text;
     } catch (e) {
       console.error('Translation error:', e);
       return text; // Return original on error
@@ -153,7 +145,7 @@ ${langName}:`;
     return {
       installed: status.installed,
       language,
-      modelId: 'gemma-2b'
+      modelId: 'qwen3-1.7b'
     };
   },
 
@@ -178,7 +170,7 @@ ${langName}:`;
       return { response: this.offlineTranslate(content) };
     }
 
-    return { response: 'This is an offline response. Please download the Gemma 2B AI model from Settings.' };
+    return { response: 'This is an offline response. Please download the Qwen3 1.7B AI model from Settings.' };
   },
 
   offlineTextFallback: function(prompt) {
@@ -203,7 +195,7 @@ ${langName}:`;
         return translation;
       }
     }
-    return '[Download Gemma 2B model for translation]';
+    return '[Download Qwen3 1.7B model for translation]';
   },
 
   generateSimpleSentence: function(prompt) {

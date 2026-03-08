@@ -439,6 +439,7 @@
         <img src="assets/icons/vault.png" alt="Vault" onclick="location.href='pages/wordVault.html'">
         <img src="assets/icons/Flashlight.png" alt="Flashlight" onclick="location.href='pages/flashlight.html'">
         <img src="assets/icons/questions.png" alt="Builder" onclick="location.href='pages/question.html'">
+        <img src="assets/icons/talk.png" alt="Talk to AI" onclick="location.href='pages/chat.html'">
         <img src="assets/icons/Settings.png" alt="Settings" onclick="openSettings()">
     </div>
 
@@ -458,6 +459,7 @@
         <img src="assets/icons/vault.png" alt="Vault" onclick="location.href='pages/wordVault.html'">
         <img src="assets/icons/Flashlight.png" alt="Flashlight" onclick="location.href='pages/flashlight.html'">
         <img src="assets/icons/questions.png" alt="Builder" onclick="location.href='pages/question.html'">
+        <img src="assets/icons/talk.png" alt="Talk to AI" onclick="location.href='pages/chat.html'">
         <img src="assets/icons/Settings.png" alt="Settings" onclick="openSettings()">
     </div>
 
@@ -481,9 +483,9 @@
         </select>
         <button class="save-btn" onclick="saveSettings()">Save Settings</button>
 
-        <!-- Gemma 2B AI Model Download Section -->
+        <!-- Qwen3 1.7B AI Model Download Section -->
         <div class="translator-section">
-            <label>Gemma 2B AI Model:</label>
+            <label>AI Model (Qwen3 1.7B):</label>
             <div class="translator-status">
                 <span class="translator-status-text">
                     <span class="translator-status-dot" id="aiModelStatusDot"></span>
@@ -497,7 +499,7 @@
                 <div class="translator-progress-fill" id="aiModelProgressFill"></div>
             </div>
             <p style="font-size: 0.8rem; color: #888; margin-top: 8px;">
-                Powers translations, hints, and explanations (~1.8GB)
+                Powers translations, hints, and explanations (~1.3GB)
             </p>
         </div>
 
@@ -701,7 +703,7 @@
             }
         });
 
-        // Gemma 2B AI Model functions
+        // Qwen3 1.7B AI Model functions
         async function checkAIModelStatus() {
             const statusDot = document.getElementById('aiModelStatusDot');
             const statusText = document.getElementById('aiModelStatusText');

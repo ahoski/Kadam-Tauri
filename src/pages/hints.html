@@ -291,7 +291,7 @@
       try {
         const data = await TauriAPI.chatCompletion(
           [{ role: "user", content: `Generate 4 simple example sentences using the word "${word}" correctly. Make them suitable for grade 3 students. Return only the sentences, one per line.` }],
-          'gemma-2b'
+          'qwen3-1.7b'
         );
 
         const content = data?.response || '';
@@ -346,7 +346,7 @@
         
         const data = await TauriAPI.chatCompletion(
           [{ role: "user", content: prompt }],
-          'gemma-2b'
+          'qwen3-1.7b'
         );
         const content = data?.response || '';
         

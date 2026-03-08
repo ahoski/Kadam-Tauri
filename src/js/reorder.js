@@ -16,7 +16,7 @@ async function testAPIConnection() {
     console.log('Testing local API connection...');
     const data = await TauriAPI.chatCompletion(
       [{ role: "user", content: "Say hello" }],
-      'gemma-2b'
+      'qwen3-1.7b'
     );
     console.log('API Test - Success:', data);
     return true;
@@ -95,7 +95,7 @@ Examples:
     console.log('Sending request to local AI...');
     const data = await TauriAPI.chatCompletion(
       [{ role: "user", content: prompt }],
-      'gemma-2b'
+      'qwen3-1.7b'
     );
 
     console.log('AI response:', data);
