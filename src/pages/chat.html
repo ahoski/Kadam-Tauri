@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talk to AI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, serif;
+      background-color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: #252525;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 1.4rem;
+      font-weight: normal;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .status.ready {
+      color: #4CAF50;
+    }
+
+    .status.loading {
+      color: #FFC107;
+    }
+
+    .chat-container {
+      flex: 1;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background-color: #4CAF50;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background-color: #333;
+      color: #fff;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.ai.thinking {
+      color: #888;
+      font-style: italic;
+    }
+
+    .message.error {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #666;
+      margin-top: 100px;
+    }
+
+    .empty-state h2 {
+      font-weight: normal;
+      margin-bottom: 10px;
+      color: #888;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    .input-container {
+      padding: 15px 20px;
+      background-color: #252525;
+      border-top: 1px solid #333;
+    }
+
+    .input-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    #chatInput {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #444;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      background-color: #333;
+      color: #fff;
+      outline: none;
+    }
+
+    #chatInput:focus {
+      border-color: #4CAF50;
+    }
+
+    #chatInput::placeholder {
+      color: #888;
+    }
+
+    #sendBtn {
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #sendBtn:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+
+    #sendBtn:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background-color: #888;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .header {
+        padding: 10px 15px;
+      }
+
+      .logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      .chat-container {
+        padding: 15px;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+
+      .input-wrapper {
+        flex-direction: column;
+      }
+
+      #sendBtn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../assets/icons/logo.png" alt="Logo" class="logo" onclick="location.href='../index.html'">
+    <h1>Talk to AI</h1>
+    <span class="status" id="aiStatus">Checking...</span>
+  </div>
+
+  <div class="chat-container" id="chatContainer">
+    <div class="empty-state" id="emptyState">
+      <h2>Start a conversation</h2>
+      <p>Ask questions, practice languages, or just chat!</p>
+    </div>
+  </div>
+
+  <div class="input-container">
+    <div class="input-wrapper">
+      <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script src="../js/tauri-api.js"></script>
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const aiStatus = document.getElementById('aiStatus');
+    const emptyState = document.getElementById('emptyState');
+
+    let conversationHistory = [];
+    let isProcessing = false;
+
+    // Initialize
+    async function init() {
+      await TauriAPI.init();
+
+      // Check model status
+      const status = await TauriAPI.checkModelStatus();
+      console.log('Model status:', status);
+
+      if (status.installed) {
+        aiStatus.textContent = 'Loading AI...';
+        aiStatus.className = 'status loading';
+
+        // Try to initialize the model directly via Tauri
+        try {
+          if (window.__TAURI__) {
+            await TauriAPI.initModel();
+            aiStatus.textContent = 'AI Ready';
+            aiStatus.className = 'status ready';
+            console.log('Model initialized successfully');
+          }
+        } catch (e) {
+          console.error('Model init error:', e);
+          aiStatus.textContent = 'Load failed';
+          aiStatus.className = 'status';
+          addMessage('Failed to load AI model: ' + e, 'ai error');
+        }
+      } else {
+        aiStatus.textContent = 'Model not downloaded';
+        aiStatus.className = 'status';
+        addMessage('Please download the AI model from the main screen to start chatting.', 'ai error');
+      }
+    }
+
+    // Add message to chat
+    function addMessage(text, type) {
+      // Remove empty state if present
+      if (emptyState) {
+        emptyState.remove();
+      }
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = text;
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return messageDiv;
+    }
+
+    // Add typing indicator
+    function addTypingIndicator() {
+      const indicator = document.createElement('div');
+      indicator.className = 'message ai thinking';
+      indicator.id = 'typingIndicator';
+      indicator.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+      chatContainer.appendChild(indicator);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    // Send message
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text || isProcessing) return;
+
+      isProcessing = true;
+      sendBtn.disabled = true;
+      chatInput.value = '';
+
+      // Add user message
+      addMessage(text, 'user');
+      conversationHistory.push({ role: 'user', content: text });
+
+      // Show typing indicator
+      addTypingIndicator();
+      aiStatus.textContent = 'Thinking...';
+      aiStatus.className = 'status loading';
+
+      try {
+        // Get AI response
+        const response = await TauriAPI.chatCompletion(conversationHistory);
+        removeTypingIndicator();
+
+        if (response && response.response) {
+          addMessage(response.response, 'ai');
+          conversationHistory.push({ role: 'assistant', content: response.response });
+          aiStatus.textContent = 'AI Ready';
+          aiStatus.className = 'status ready';
+        } else {
+          addMessage('Sorry, I could not generate a response.', 'ai error');
+          aiStatus.textContent = 'Error';
+          aiStatus.className = 'status';
+        }
+      } catch (error) {
+        removeTypingIndicator();
+        console.error('Chat error:', error);
+        addMessage('Error: ' + (error.message || error), 'ai error');
+        aiStatus.textContent = 'Error';
+        aiStatus.className = 'status';
+      }
+
+      isProcessing = false;
+      sendBtn.disabled = false;
+      chatInput.focus();
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
