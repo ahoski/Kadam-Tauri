@@ -9,10 +9,20 @@ use std::path::PathBuf;
 use std::fs;
 use tauri::State;
 
-// Model state wrapper
+// Channel-based inference commands
+enum InferenceCommand {
+    Init {
+        resp_tx: tokio::sync::oneshot::Sender<Result<String, String>>,
+    },
+    ChatCompletion {
+        request: ChatRequest,
+        resp_tx: tokio::sync::oneshot::Sender<Result<ChatResponse, String>>,
+    },
+}
+
+// Model state - holds sender to the dedicated inference thread
 struct ModelState {
-    backend: Mutex<Option<llama_cpp_2::llama_backend::LlamaBackend>>,
-    model_path: Mutex<Option<PathBuf>>,
+    cmd_tx: Mutex<std::sync::mpsc::Sender<InferenceCommand>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -48,7 +58,7 @@ fn get_model_dir() -> PathBuf {
 
 // Get the full model path
 fn get_model_path() -> PathBuf {
-    get_model_dir().join("gemma-3-1b.gguf")
+    get_model_dir().join("qwen3-1.7b-q5_k_m.gguf")
 }
 
 // Check if model is installed
@@ -72,6 +82,13 @@ async fn check_model_status() -> Result<ModelStatus, String> {
     })
 }
 
+// Get HuggingFace token from ~/.cache/huggingface/token
+fn get_hf_token() -> Option<String> {
+    let home = dirs::home_dir()?;
+    let token_path = home.join(".cache").join("huggingface").join("token");
+    fs::read_to_string(token_path).ok().map(|s| s.trim().to_string())
+}
+
 // Download the model from Hugging Face
 #[tauri::command]
 async fn download_model(window: tauri::Window) -> Result<String, String> {
@@ -84,14 +101,30 @@ async fn download_model(window: tauri::Window) -> Result<String, String> {
     fs::create_dir_all(&model_dir)
         .map_err(|e| format!("Failed to create model directory: {}", e))?;
 
-    // Hugging Face URL for Gemma 3 1B GGUF (Q2_K quantization - smaller ~350MB download)
-    let url = "https://huggingface.co/bartowski/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q2_K.gguf";
+    // Qwen3-1.7B Q5_K_M GGUF (from unsloth, ~1.26 GB)
+    let url = "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q5_K_M.gguf";
+
+    let hf_token = get_hf_token();
 
     let client = reqwest::Client::new();
-    let response = client.get(url)
+    let mut request = client.get(url);
+
+    if let Some(token) = &hf_token {
+        request = request.header("Authorization", format!("Bearer {}", token));
+    }
+
+    let response = request
         .send()
         .await
         .map_err(|e| format!("Failed to start download: {}", e))?;
+
+    if response.status() == reqwest::StatusCode::UNAUTHORIZED {
+        return Err("Authentication required. Please run 'huggingface-cli login' in your terminal first.".to_string());
+    }
+
+    if !response.status().is_success() {
+        return Err(format!("Download failed with status: {}", response.status()));
+    }
 
     let total_size = response.content_length().unwrap_or(0);
 
@@ -109,7 +142,6 @@ async fn download_model(window: tauri::Window) -> Result<String, String> {
 
         downloaded += chunk.len() as u64;
 
-        // Emit progress event
         let progress = if total_size > 0 {
             (downloaded as f64 / total_size as f64 * 100.0) as u32
         } else {
@@ -126,26 +158,17 @@ async fn download_model(window: tauri::Window) -> Result<String, String> {
     Ok(format!("Model downloaded to: {}", model_path.display()))
 }
 
-// Initialize the model backend
+// Initialize the model backend (idempotent — safe to call multiple times)
 #[tauri::command]
 async fn init_model(state: State<'_, ModelState>) -> Result<String, String> {
-    let model_path = get_model_path();
-
-    if !model_path.exists() {
-        return Err("Model not found. Please download the model first.".to_string());
+    let (resp_tx, resp_rx) = tokio::sync::oneshot::channel();
+    {
+        let cmd_tx = state.cmd_tx.lock().map_err(|e| e.to_string())?;
+        cmd_tx.send(InferenceCommand::Init { resp_tx })
+            .map_err(|e| format!("Failed to send init command: {}", e))?;
     }
-
-    // Initialize llama backend
-    let backend = llama_cpp_2::llama_backend::LlamaBackend::init()
-        .map_err(|e| format!("Failed to initialize backend: {:?}", e))?;
-
-    let mut backend_guard = state.backend.lock().map_err(|e| e.to_string())?;
-    *backend_guard = Some(backend);
-
-    let mut path_guard = state.model_path.lock().map_err(|e| e.to_string())?;
-    *path_guard = Some(model_path);
-
-    Ok("Model initialized successfully".to_string())
+    resp_rx.await
+        .map_err(|e| format!("Inference thread dropped: {}", e))?
 }
 
 // Chat completion command
@@ -154,19 +177,41 @@ async fn chat_completion(
     request: ChatRequest,
     state: State<'_, ModelState>,
 ) -> Result<ChatResponse, String> {
-    let backend_guard = state.backend.lock().map_err(|e| e.to_string())?;
-    let path_guard = state.model_path.lock().map_err(|e| e.to_string())?;
+    let (resp_tx, resp_rx) = tokio::sync::oneshot::channel();
+    {
+        let cmd_tx = state.cmd_tx.lock().map_err(|e| e.to_string())?;
+        cmd_tx.send(InferenceCommand::ChatCompletion { request, resp_tx })
+            .map_err(|e| format!("Failed to send chat command: {}", e))?;
+    }
+    resp_rx.await
+        .map_err(|e| format!("Inference thread dropped: {}", e))?
+}
 
-    let backend = backend_guard.as_ref()
-        .ok_or("Model not initialized. Call init_model first.")?;
-    let model_path = path_guard.as_ref()
-        .ok_or("Model path not set")?;
+// Simple text generation
+#[tauri::command]
+async fn generate_text(
+    prompt: String,
+    _max_tokens: Option<u32>,
+    state: State<'_, ModelState>,
+) -> Result<String, String> {
+    let request = ChatRequest {
+        messages: vec![ChatMessage {
+            role: "user".to_string(),
+            content: prompt,
+        }],
+        model: None,
+    };
 
-    // Load model
-    let model_params = llama_cpp_2::model::params::LlamaModelParams::default();
-    let model = llama_cpp_2::model::LlamaModel::load_from_file(backend, model_path, &model_params)
-        .map_err(|e| format!("Failed to load model: {:?}", e))?;
+    let response = chat_completion(request, state).await?;
+    Ok(response.response)
+}
 
+// Run inference using the already-loaded model (called on the inference thread)
+fn run_inference(
+    backend: &llama_cpp_2::llama_backend::LlamaBackend,
+    model: &llama_cpp_2::model::LlamaModel,
+    request: ChatRequest,
+) -> Result<ChatResponse, String> {
     // Create context
     let ctx_params = llama_cpp_2::context::params::LlamaContextParams::default()
         .with_n_ctx(std::num::NonZeroU32::new(2048));
@@ -174,18 +219,24 @@ async fn chat_completion(
     let mut ctx = model.new_context(backend, ctx_params)
         .map_err(|e| format!("Failed to create context: {:?}", e))?;
 
-    // Format messages into prompt
-    let prompt: String = request
-        .messages
-        .iter()
-        .map(|m| {
-            match m.role.as_str() {
-                "user" => format!("<start_of_turn>user\n{}<end_of_turn>\n", m.content),
-                "assistant" => format!("<start_of_turn>model\n{}<end_of_turn>\n", m.content),
-                _ => format!("{}: {}\n", m.role, m.content),
-            }
-        })
-        .collect::<String>() + "<start_of_turn>model\n";
+    // Format messages into Qwen3 ChatML template
+    let mut prompt = String::new();
+
+    // Add system message if not present in request
+    let has_system = request.messages.iter().any(|m| m.role == "system");
+    if !has_system {
+        prompt.push_str("<|im_start|>system\nYou are a helpful language learning assistant. Provide clear, concise responses. Respond directly without thinking.<|im_end|>\n");
+    }
+
+    for msg in &request.messages {
+        prompt.push_str(&format!(
+            "<|im_start|>{}\n{}<|im_end|>\n",
+            msg.role, msg.content
+        ));
+    }
+
+    // Prompt the assistant to respond
+    prompt.push_str("<|im_start|>assistant\n");
 
     // Tokenize
     let tokens = model.str_to_token(&prompt, llama_cpp_2::model::AddBos::Always)
@@ -228,37 +279,104 @@ async fn chat_completion(
     }
 
     // Convert tokens to string
-    let output = output_tokens.iter()
+    let mut output = output_tokens.iter()
         .filter_map(|t| model.token_to_str(*t, llama_cpp_2::model::Special::Tokenize).ok())
         .collect::<String>();
 
-    Ok(ChatResponse { response: output })
+    // Strip any trailing <|im_end|> token text
+    if let Some(idx) = output.find("<|im_end|>") {
+        output.truncate(idx);
+    }
+
+    // Strip <think>...</think> blocks if present (Qwen3 thinking mode output)
+    if let Some(think_start) = output.find("<think>") {
+        if let Some(think_end) = output.find("</think>") {
+            let after_think = &output[think_end + 8..];
+            output = after_think.trim().to_string();
+        }
+    }
+
+    Ok(ChatResponse { response: output.trim().to_string() })
 }
 
-// Simple text generation
-#[tauri::command]
-async fn generate_text(
-    prompt: String,
-    _max_tokens: Option<u32>,
-    state: State<'_, ModelState>,
-) -> Result<String, String> {
-    let request = ChatRequest {
-        messages: vec![ChatMessage {
-            role: "user".to_string(),
-            content: prompt,
-        }],
-        model: None,
-    };
+// Dedicated inference thread — model stays loaded for the lifetime of the app
+fn inference_thread(cmd_rx: std::sync::mpsc::Receiver<InferenceCommand>) {
+    loop {
+        let cmd = match cmd_rx.recv() {
+            Ok(cmd) => cmd,
+            Err(_) => return, // Channel closed, app shutting down
+        };
 
-    let response = chat_completion(request, state).await?;
-    Ok(response.response)
+        match cmd {
+            InferenceCommand::Init { resp_tx } => {
+                let model_path = get_model_path();
+                if !model_path.exists() {
+                    let _ = resp_tx.send(Err(
+                        "Model not found. Please download the model first.".to_string()
+                    ));
+                    continue;
+                }
+
+                let backend = match llama_cpp_2::llama_backend::LlamaBackend::init() {
+                    Ok(b) => b,
+                    Err(e) => {
+                        let _ = resp_tx.send(Err(
+                            format!("Failed to initialize backend: {:?}", e)
+                        ));
+                        continue;
+                    }
+                };
+
+                let model_params = llama_cpp_2::model::params::LlamaModelParams::default();
+                let model = match llama_cpp_2::model::LlamaModel::load_from_file(
+                    &backend, &model_path, &model_params
+                ) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        let _ = resp_tx.send(Err(
+                            format!("Failed to load model: {:?}", e)
+                        ));
+                        continue;
+                    }
+                };
+
+                let _ = resp_tx.send(Ok("Model initialized successfully".to_string()));
+
+                // Model is loaded — process all subsequent requests with it cached
+                while let Ok(cmd) = cmd_rx.recv() {
+                    match cmd {
+                        InferenceCommand::Init { resp_tx } => {
+                            let _ = resp_tx.send(Ok(
+                                "Model already initialized".to_string()
+                            ));
+                        }
+                        InferenceCommand::ChatCompletion { request, resp_tx } => {
+                            let result = run_inference(&backend, &model, request);
+                            let _ = resp_tx.send(result);
+                        }
+                    }
+                }
+                return; // Channel closed
+            }
+            InferenceCommand::ChatCompletion { resp_tx, .. } => {
+                let _ = resp_tx.send(Err(
+                    "Model not initialized. Call init_model first.".to_string()
+                ));
+            }
+        }
+    }
 }
 
 fn main() {
+    let (cmd_tx, cmd_rx) = std::sync::mpsc::channel();
+
+    std::thread::spawn(move || {
+        inference_thread(cmd_rx);
+    });
+
     tauri::Builder::default()
         .manage(ModelState {
-            backend: Mutex::new(None),
-            model_path: Mutex::new(None),
+            cmd_tx: Mutex::new(cmd_tx),
         })
         .invoke_handler(tauri::generate_handler![
             check_model_status,

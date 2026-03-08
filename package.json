@@ -1,7 +1,7 @@
 {
   "name": "kadam-language-learning",
   "version": "1.0.0",
-  "description": "Kadam - Learn languages with Gemma 2B AI",
+  "description": "Kadam - Learn languages with Qwen3 1.7B AI",
   "scripts": {
     "tauri": "tauri",
     "tauri:dev": "tauri dev",

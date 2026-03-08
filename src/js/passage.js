@@ -69,7 +69,7 @@ async function generatePassageWithMCQ(word) {
     
     const data = await TauriAPI.chatCompletion(
       [{ role: "user", content: prompt }],
-      'gemma-2b'
+      'qwen3-1.7b'
     );
     const content = data?.response || '';
     

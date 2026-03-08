@@ -283,12 +283,162 @@ class InteractiveOnboarding {
       return;
     }
 
+    // Check if AI model has been downloaded (mandatory before using app)
+    const modelDownloaded = localStorage.getItem('modelDownloaded') === 'true';
+    if (!modelDownloaded) {
+      this.checkAndShowModelDownload();
+      return;
+    }
+
     // Check if user wants tutorial and it's not completed
     const wantsTutorial = localStorage.getItem('wantsTutorial') === 'true';
     if (wantsTutorial && !this.checkpoints.tutorialComplete) {
       this.wantsTutorial = true;
       this.resumeTutorial();
     }
+  }
+
+  // Check model status and show download screen if needed
+  async checkAndShowModelDownload() {
+    // Wait for TauriAPI to be available
+    if (typeof TauriAPI === 'undefined') {
+      // Not in Tauri environment, skip model download
+      localStorage.setItem('modelDownloaded', 'true');
+      this.continueAfterModelDownload();
+      return;
+    }
+
+    await TauriAPI.init();
+    const status = await TauriAPI.checkModelStatus();
+
+    if (status.installed) {
+      // Model already downloaded, mark as complete and continue
+      localStorage.setItem('modelDownloaded', 'true');
+      this.continueAfterModelDownload();
+    } else {
+      // Show mandatory download screen
+      this.showModelDownload();
+    }
+  }
+
+  // Show the mandatory model download screen
+  showModelDownload() {
+    const downloadTexts = {
+      hindi: {
+        subtitle: 'ऐप का उपयोग करने से पहले AI मॉडल डाउनलोड करें',
+        downloading: 'डाउनलोड हो रहा है...',
+        ready: 'तैयार है!'
+      },
+      telugu: {
+        subtitle: 'యాప్ వాడటానికి ముందు AI మోడల్ డౌన్‌లోడ్ చేయండి',
+        downloading: 'డౌన్‌లోడ్ అవుతోంది...',
+        ready: 'సిద్ధం!'
+      },
+      tamil: {
+        subtitle: 'ஆப்ஸைப் பயன்படுத்துவதற்கு முன் AI மாடலைப் பதிவிறக்கவும்',
+        downloading: 'பதிவிறக்கம்...',
+        ready: 'தயார்!'
+      }
+    };
+
+    const texts = downloadTexts[this.language] || downloadTexts.hindi;
+
+    const modal = document.createElement('div');
+    modal.className = 'model-download-fullscreen';
+    modal.id = 'modelDownloadScreen';
+    modal.innerHTML = `
+      <div class="model-download-content">
+        <svg class="model-download-icon" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <h1 class="model-download-title">Download AI Model</h1>
+        <p class="model-download-subtitle">
+          ${texts.subtitle}<br><br>
+          This enables translations, hints, and explanations to work offline.
+        </p>
+        <button class="model-download-btn" id="modelDownloadBtn" onclick="tutorialGuide.startModelDownload()">
+          Download AI Model
+        </button>
+        <div class="model-download-progress" id="modelDownloadProgress">
+          <div class="model-download-progress-fill" id="modelDownloadProgressFill"></div>
+        </div>
+        <p class="model-download-status" id="modelDownloadStatus"></p>
+        <p class="model-download-size">~1.3 GB download (supports Hindi, Telugu, Tamil, Spanish, French, German)</p>
+        <p class="model-download-error" id="modelDownloadError"></p>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Start the model download
+  async startModelDownload() {
+    const btn = document.getElementById('modelDownloadBtn');
+    const progress = document.getElementById('modelDownloadProgress');
+    const progressFill = document.getElementById('modelDownloadProgressFill');
+    const status = document.getElementById('modelDownloadStatus');
+    const errorEl = document.getElementById('modelDownloadError');
+
+    // Update UI to downloading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="download-spinner"></span>Downloading...';
+    btn.classList.add('downloading');
+    progress.style.display = 'block';
+    progressFill.style.width = '0%';
+    errorEl.style.display = 'none';
+
+    try {
+      await TauriAPI.downloadModel((progressData) => {
+        if (progressData.progress !== undefined) {
+          const percent = Math.round(progressData.progress);
+          progressFill.style.width = percent + '%';
+          const downloadedMB = Math.round(progressData.downloaded / (1024 * 1024));
+          const totalMB = Math.round(progressData.total / (1024 * 1024));
+          status.textContent = `${downloadedMB} MB / ${totalMB} MB (${percent}%)`;
+        }
+      });
+
+      // Download complete
+      localStorage.setItem('modelDownloaded', 'true');
+      btn.innerHTML = '✓ Download Complete';
+      btn.classList.remove('downloading');
+      btn.style.background = '#4CAF50';
+      status.textContent = 'AI model ready!';
+      progress.style.display = 'none';
+
+      // Wait a moment then continue
+      setTimeout(() => {
+        this.closeModelDownload();
+        this.continueAfterModelDownload();
+      }, 1500);
+
+    } catch (e) {
+      console.error('Model download failed:', e);
+      btn.disabled = false;
+      btn.innerHTML = 'Retry Download';
+      btn.classList.remove('downloading');
+      progress.style.display = 'none';
+      errorEl.textContent = 'Download failed. Please check your connection and try again.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  // Close the model download screen
+  closeModelDownload() {
+    const modal = document.getElementById('modelDownloadScreen');
+    if (modal) modal.remove();
+  }
+
+  // Continue the onboarding flow after model download
+  continueAfterModelDownload() {
+    // Check if user wants tutorial and it's not completed
+    const wantsTutorial = localStorage.getItem('wantsTutorial') === 'true';
+    if (wantsTutorial && !this.checkpoints.tutorialComplete) {
+      this.wantsTutorial = true;
+      this.resumeTutorial();
+    }
+    // Otherwise, app is ready to use
   }
 
   showLanguageSelection() {
@@ -381,8 +531,10 @@ class InteractiveOnboarding {
     if (wantsTutorial) {
       // Show tutorial language choice
       this.showTutorialLanguageChoice();
+    } else {
+      // No tutorial - show model download screen before app is usable
+      this.checkAndShowModelDownload();
     }
-    // If no tutorial, just let the app continue normally
   }
 
   showTutorialLanguageChoice() {
@@ -429,7 +581,8 @@ class InteractiveOnboarding {
     const modal = document.querySelector('.language-selection-fullscreen');
     if (modal) modal.remove();
 
-    this.startTutorial();
+    // Show model download screen before starting tutorial
+    this.checkAndShowModelDownload();
   }
   
   startTutorial() {
