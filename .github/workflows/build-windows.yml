@@ -1,0 +1,76 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download Gemma model
+        run: |
+          mkdir -p src-tauri/models
+          pip install huggingface_hub
+          huggingface-cli download google/gemma-3-1b-it-GGUF gemma-3-1b-it-q4_k_m.gguf --local-dir src-tauri/models
+          mv src-tauri/models/gemma-3-1b-it-q4_k_m.gguf src-tauri/models/gemma-3-1b.gguf
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+      - name: Build Tauri app
+        run: npm run tauri:build
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kadam-windows-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Upload NSIS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kadam-windows-nsis
+          path: src-tauri/target/release/bundle/nsis/*.exe
+
+      - name: Create Windows Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-windows
+          name: "Kadam v1.0.0 - Windows"
+          body: |
+            ## Kadam v1.0.0 - Windows
+
+            Offline AI-powered language learning desktop app.
+
+            ### Downloads
+            - **Windows Installer (.msi)**: For standard installation
+            - **Windows Setup (.exe)**: NSIS installer alternative
+
+            ### Features
+            - Interactive comic-based stories for language learning
+            - Offline AI (Gemma 3 1B) — no internet required
+            - Supports Hindi, Telugu, Tamil, Spanish, French, German
+            - Quizzes: MCQ, reorder, passage comprehension, free-response
+            - Vocabulary learning with AI translation
+          files: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
