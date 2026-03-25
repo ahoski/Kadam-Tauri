@@ -25,15 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Download Gemma model
-        run: |
-          mkdir -p src-tauri/models
-          pip install huggingface_hub
-          huggingface-cli download google/gemma-3-1b-it-GGUF gemma-3-1b-it-q4_k_m.gguf --local-dir src-tauri/models
-          mv src-tauri/models/gemma-3-1b-it-q4_k_m.gguf src-tauri/models/gemma-3-1b.gguf
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-
       - name: Build Tauri app
         run: npm run tauri:build
 
@@ -63,9 +54,11 @@ jobs:
             - **Windows Installer (.msi)**: For standard installation
             - **Windows Setup (.exe)**: NSIS installer alternative
 
+            The Qwen3 1.7B AI model downloads automatically on first launch — no manual setup needed.
+
             ### Features
             - Interactive comic-based stories for language learning
-            - Offline AI (Gemma 3 1B) — no internet required
+            - Offline AI (Qwen3 1.7B) — no internet required after model download
             - Supports Hindi, Telugu, Tamil, Spanish, French, German
             - Quizzes: MCQ, reorder, passage comprehension, free-response
             - Vocabulary learning with AI translation
